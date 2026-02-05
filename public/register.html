@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | E-Adem Global Company Limited</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="auth-body">
+    <!-- Decorative Background Circles -->
+    <div class="auth-bg-circle" style="width: 600px; height: 600px; top: -150px; right: -150px;"></div>
+    <div class="auth-bg-circle" style="width: 300px; height: 300px; bottom: 50px; left: -50px; background: radial-gradient(circle, var(--secondary-blue), transparent);"></div>
+
+    <div class="auth-card">
+        <div class="auth-content">
+            <div class="auth-header">
+                <a href="index.html">
+                    <img src="./images/logo.png" alt="E-Adem Logo" class="auth-logo">
+                </a>
+                <h2 class="auth-title">Create Account</h2>
+                <p class="auth-subtitle">Join us and start your financial journey</p>
+            </div>
+
+            <form action="dashboard.html">
+                <div class="input-group">
+                    <input type="text" id="fullname" class="input-field" placeholder=" " required>
+                    <label for="fullname" class="input-label">Full Name</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="email" id="email" class="input-field" placeholder=" " required>
+                    <label for="email" class="input-label">Email Address</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="tel" id="phone" class="input-field" placeholder=" " required>
+                    <label for="phone" class="input-label">Phone Number</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="password" class="input-field" placeholder=" " required>
+                    <label for="password" class="input-label">Password</label>
+                </div>
+
+                <button type="submit" class="auth-btn">Register</button>
+            </form>
+
+            <div class="auth-links">
+                <p>Already have an account? <a href="login.html">Sign In</a></p>
+            </div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+    <script src="auth.js"></script>
+</body>
+</html>

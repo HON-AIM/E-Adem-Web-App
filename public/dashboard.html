@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | E-Adem Global Company Limited</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-body">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html">
+                <img src="./images/logo.png" alt="E-Adem" class="sidebar-logo">
+            </a>
+        </div>
+        
+        <div class="user-profile-mini">
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="User" class="user-avatar-small">
+            <div class="user-info-mini">
+                <h4>John Doe</h4>
+                <p>Member</p>
+            </div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-user"></i> My Profile</a></li>
+            <li><a href="application.html"><i class="fas fa-plus-circle"></i> Apply for Service</a></li>
+            <li><a href="#"><i class="fas fa-wallet"></i> My Loans</a></li>
+            <li><a href="#"><i class="fas fa-piggy-bank"></i> Investments</a></li>
+            <li><a href="#"><i class="fas fa-chart-line"></i> Forex Trading</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+        </ul>
+
+        <div style="padding: 20px;">
+            <a href="index.html" class="btn btn-outline" style="width: 100%; text-align: center; border-color: rgba(255,255,255,0.3); color: white;">Logout</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <div class="dashboard-topbar">
+            <button class="mobile-menu-btn" id="sidebarToggle" style="display: none; color: var(--primary-blue);">☰</button>
+            <div class="welcome-text">
+                <h2>My Account Overview</h2>
+                <p>Welcome back, John!</p>
+            </div>
+            <div class="theme-toggle">
+                <span class="theme-icon">🌙</span>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Profile Ownership Card -->
+            <div class="card profile-card-large" style="grid-column: 1 / -1; max-width: 800px; margin: 0 auto;">
+                <div class="profile-card-bg"></div>
+                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Profile" class="profile-avatar-large">
+                
+                <h2 class="profile-name">John Doe</h2>
+                <span class="profile-role">Premium Member</span>
+                
+                <div class="profile-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Account ID</span>
+                        <span class="detail-value">EAD-8842-109</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value">john.doe@example.com</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Phone</span>
+                        <span class="detail-value">+234 800 123 4567</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Member Since</span>
+                        <span class="detail-value">August 2024</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="stat-info">
+                    <p>Total Balance</p>
+                    <h3>₦0.00</h3>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+                <div class="stat-info">
+                    <p>Active Loans</p>
+                    <h3>0</h3>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="stat-info">
+                    <p>Investment Status</p>
+                    <h3>Active</h3>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Simple script for sidebar toggle
+        const toggleBtn = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        // Show toggle button on mobile
+        if(window.innerWidth <= 992) {
+            toggleBtn.style.display = 'block';
+        }
+
+        window.addEventListener('resize', () => {
+            if(window.innerWidth <= 992) {
+                toggleBtn.style.display = 'block';
+            } else {
+                toggleBtn.style.display = 'none';
+            }
+        });
+
+        toggleBtn.addEventListener('click', () => {
+             sidebar.classList.toggle('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if(window.innerWidth <= 992 && 
+               !sidebar.contains(e.target) && 
+               !toggleBtn.contains(e.target) &&
+               sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+        });
+    </script>
+    <script src="main.js"></script>
+    <script src="auth.js"></script>
+</body>
+</html>
