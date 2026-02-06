@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | E-Adem Global</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-sidebar {
+            background: #1e293b;
+        }
+        .content-editor-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .content-editor-row label {
+            width: 200px;
+            font-weight: 600;
+        }
+        .editor-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+        }
+        .tab-btn.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+        .admin-section {
+            display: none;
+        }
+        .admin-section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+    <!-- Admin Sidebar -->
+    <aside class="sidebar admin-sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h3 style="color:white; margin: 0;">E-Adem Admin</h3>
+      </div>
+      
+      <div class="user-profile-mini">
+        <div style="width: 40px; height: 40px; background: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <div class="user-info-mini">
+          <h4>Admin User</h4>
+          <p style="color: #ef4444;">Administrator</p>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li><a href="#" class="active" onclick="switchAdminTab('users')"><i class="fas fa-users"></i> User Management</a></li>
+        <li><a href="#" onclick="switchAdminTab('content')"><i class="fas fa-edit"></i> Website Content</a></li>
+        <li><a href="#" onclick="switchAdminTab('applications')"><i class="fas fa-file-contract"></i> Applications</a></li>
+      </ul>
+
+      <div style="padding: 20px">
+        <button id="admin-logout" class="btn btn-outline" style="width: 100%; border-color: rgba(255,255,255,0.3); color: white;">Logout</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <div class="dashboard-topbar">
+            <h3>Admin Dashboard</h3>
+             <div class="theme-toggle"><span class="theme-icon">🌙</span></div>
+        </div>
+
+        <!-- Users Tab -->
+        <div id="tab-users" class="admin-section active">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; margin-bottom: 20px;">
+                    <h3>Registered Users</h3>
+                    <button class="btn btn-sm btn-primary" onclick="loadUsers()"><i class="fas fa-sync"></i> Refresh</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="transaction-table" id="users-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Loan Balance</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="5">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Editor Tab -->
+        <div id="tab-content" class="admin-section">
+            <div class="card">
+                <h3>Edit Website Content</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 30px;">Update text and settings across the main website in real-time.</p>
+                
+                <form id="content-form">
+                    <div class="content-editor-row">
+                        <label>Hero Welcome Title</label>
+                        <input type="text" name="heroTitle" class="editor-input" placeholder="Welcome to E-Adem...">
+                    </div>
+                    <div class="content-editor-row">
+                        <label>Investment Returns (%)</label>
+                        <input type="text" name="investRate" class="editor-input" placeholder="e.g. 20%">
+                    </div>
+                     <div class="content-editor-row">
+                        <label>Loan Interest Rate (%)</label>
+                        <input type="text" name="loanRate" class="editor-input" placeholder="e.g. 5%">
+                    </div>
+                    <div class="content-editor-row">
+                        <label>Announcement Banner</label>
+                        <textarea name="announcement" class="editor-input" rows="3" placeholder="Latest news..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Applications Tab (Mock) -->
+        <div id="tab-applications" class="admin-section">
+             <div class="card">
+                 <h3>Pending Applications</h3>
+                 <p>No new applications at this moment.</p>
+             </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Simple Admin Scripts
+        function switchAdminTab(tabName) {
+            document.querySelectorAll('.admin-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            
+            // Sidebar active state
+            // (Simplified for demo)
+        }
+
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/admin/users');
+                if (!res.ok) {
+                    throw new Error(`Status: ${res.status}`);
+                }
+                const users = await res.json();
+                
+                // ... (table logic) ...
+                const tbody = document.querySelector('#users-table tbody');
+                tbody.innerHTML = users.map(user => `
+                    <tr>
+                        <td>
+                            <div style="font-weight:600">${user.fullName}</div>
+                            <div style="font-size:0.8rem; color:#64748b">${user._id}</div>
+                        </td>
+                        <td>${user.email}</td>
+                        <td>${user.activeLoanAmount > 0 ? '₦' + user.activeLoanAmount.toLocaleString() : '-'}</td>
+                        <td><span class="status-badge ${user.role === 'admin' ? 'status-failed' : 'status-success'}">${user.role}</span></td>
+                        <td>
+                           <button class="btn btn-sm btn-outline-primary" onclick="manageLoan('${user._id}')">Loan Action</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+                if (confirm(`Admin access failed (${err.message}). Try logging in again?`)) window.location.href = 'login.html';
+            }
+        }
+
+        async function manageLoan(userId) {
+            const action = prompt("Type 'approve' to Assign Loan or 'reject' to Clear Status:");
+            if (!action) return;
+            
+            let amount = 0;
+            if (action === 'approve') {
+                amount = prompt("Enter Loan Amount (Numbers only):");
+                if (!amount) return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/loan-action', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ userId, action, amount })
+                });
+                const result = await res.json();
+                alert(result.message);
+                loadUsers();
+            } catch(e) { alert('Error processing action'); }
+        }
+
+        // Content Save
+        document.getElementById('content-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const updates = Object.fromEntries(formData.entries());
+            
+            try {
+                const res = await fetch('/api/content', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ updates })
+                });
+                alert('Website content updated successfully!');
+            } catch(e) { alert('Failed to update content'); }
+        });
+        
+        // Logout
+        document.getElementById('admin-logout').addEventListener('click', async () => {
+             await fetch('/api/logout', { method: 'POST' });
+             window.location.href = 'login.html';
+        });
+
+        // Load initially
+        loadUsers();
+    </script>
+</body>
+</html>

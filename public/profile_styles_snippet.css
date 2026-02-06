@@ -1,0 +1,81 @@
+
+/* =========================================
+   Profile View Styles
+   ========================================= */
+.profile-card-large {
+  background: var(--card-bg);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  padding: 0 0 40px 0;
+  border: 1px solid var(--border-color);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.profile-card-bg {
+  height: 120px;
+  background: linear-gradient(135deg, var(--primary-blue), var(--accent-blue));
+}
+
+.profile-avatar-large {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 5px solid var(--card-bg);
+  object-fit: cover;
+  display: block;
+  margin: -60px auto 0;
+  background: var(--bg-color);
+  position: relative;
+  z-index: 2;
+}
+
+.profile-name {
+  color: var(--text-color);
+  font-size: 1.5rem;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+
+.profile-role {
+  color: var(--accent-blue);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.profile-details {
+  padding: 0 40px;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.detail-value {
+  color: var(--text-color);
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Upload Button Hover Effects */
+.profile-upload-section .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}

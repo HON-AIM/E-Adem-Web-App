@@ -1,153 +1,611 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard | E-Adem Global Company Limited</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="dashboard-body">
-    
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="dashboard-body">
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <a href="index.html">
-                <img src="./images/logo.png" alt="E-Adem" class="sidebar-logo">
-            </a>
-        </div>
-        
-        <div class="user-profile-mini">
-            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="User" class="user-avatar-small">
-            <div class="user-info-mini">
-                <h4>John Doe</h4>
-                <p>Member</p>
-            </div>
-        </div>
+      <div class="sidebar-header">
+        <a href="index.html">
+          <img src="./images/logo.png" alt="E-Adem" class="sidebar-logo" />
+        </a>
+      </div>
 
-        <ul class="sidebar-menu">
-            <li><a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
-            <li><a href="#"><i class="fas fa-user"></i> My Profile</a></li>
-            <li><a href="application.html"><i class="fas fa-plus-circle"></i> Apply for Service</a></li>
-            <li><a href="#"><i class="fas fa-wallet"></i> My Loans</a></li>
-            <li><a href="#"><i class="fas fa-piggy-bank"></i> Investments</a></li>
-            <li><a href="#"><i class="fas fa-chart-line"></i> Forex Trading</a></li>
-            <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-        </ul>
-
-        <div style="padding: 20px;">
-            <a href="index.html" class="btn btn-outline" style="width: 100%; text-align: center; border-color: rgba(255,255,255,0.3); color: white;">Logout</a>
+      <div class="user-profile-mini">
+        <img
+          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+          alt="User"
+          class="user-avatar-small"
+        />
+        <div class="user-info-mini">
+          <h4>John Doe</h4>
+          <p>Member</p>
         </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li>
+          <a href="#" class="active" id="nav-dashboard"
+            ><i class="fas fa-home"></i> Dashboard</a
+          >
+        </li>
+        <li>
+          <a href="#" id="nav-profile"
+            ><i class="fas fa-user"></i> My Profile</a
+          >
+        </li>
+        <li>
+          <a href="application.html" id="nav-apply-external"
+            ><i class="fas fa-plus-circle"></i> Apply for Service</a
+          >
+        </li>
+        <li>
+          <a href="#" id="nav-loans"><i class="fas fa-wallet"></i> My Loans</a>
+        </li>
+        <li>
+          <a href="#" id="nav-investments"><i class="fas fa-piggy-bank"></i> Investments</a>
+        </li>
+        <li>
+          <a href="#" id="nav-forex"><i class="fas fa-chart-line"></i> Forex Trading</a>
+        </li>
+        <li>
+          <a href="#" id="nav-settings"><i class="fas fa-cog"></i> Settings</a>
+        </li>
+      </ul>
+
+      <div style="padding: 20px">
+        <a
+          href="index.html"
+          class="btn btn-outline"
+          style="
+            width: 100%;
+            text-align: center;
+            border-color: rgba(255, 255, 255, 0.3);
+            color: white;
+          "
+          >Logout</a
+        >
+      </div>
     </aside>
 
     <!-- Main Content -->
     <main class="dashboard-main">
-        <div class="dashboard-topbar">
-            <button class="mobile-menu-btn" id="sidebarToggle" style="display: none; color: var(--primary-blue);">☰</button>
-            <div class="welcome-text">
-                <h2>My Account Overview</h2>
-                <p>Welcome back, John!</p>
-            </div>
-            <div class="theme-toggle">
-                <span class="theme-icon">🌙</span>
-            </div>
+      <div class="dashboard-topbar">
+        <button
+          class="mobile-menu-btn"
+          id="sidebarToggle"
+          style="display: none; color: var(--primary-blue)"
+        >
+          ☰
+        </button>
+        <div class="welcome-text">
+          <h2>My Account Overview</h2>
+          <p>Welcome back, John!</p>
         </div>
+        <div class="theme-toggle">
+          <span class="theme-icon">🌙</span>
+        </div>
+      </div>
+
+      <!-- View: Dashboard Overview -->
+      <div id="view-dashboard" class="dashboard-view active">
+        
+        <!-- Welcome / Total Balance Hero -->
+        <div class="dashboard-hero" style="background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); color: white; padding: 32px; border-radius: 24px; margin-bottom: 32px; position: relative; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+            <div style="position: relative; z-index: 1;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    <p style="opacity: 0.8; font-size: 0.9rem; margin: 0;">TOTAL BALANCE</p>
+                    <button id="toggle-balance-btn" style="background: none; border: none; color: white; opacity: 0.7; cursor: pointer;">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <h1 id="total-balance-display" style="font-size: 3rem; font-weight: 700; margin: 0; letter-spacing: -1px; display: flex; align-items: center; gap: 10px;">
+                    <span class="currency">₦</span><span class="amount">0.00</span>
+                </h1>
+                <div style="margin-top: 24px; display: flex; gap: 12px;">
+                     <button class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+                        <i class="fas fa-plus"></i> Top Up
+                     </button>
+                     <button class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+                        <i class="fas fa-paper-plane"></i> Transfer
+                     </button>
+                </div>
+            </div>
+            <!-- Decorative circle -->
+            <div style="position: absolute; right: -50px; top: -50px; width: 300px; height: 300px; background: radial-gradient(circle, var(--accent-blue), transparent); opacity: 0.3; border-radius: 50%;"></div>
+        </div>
+
+        <h3 style="margin-bottom: 24px; color: var(--primary-blue);">Financial Overview</h3>
 
         <div class="dashboard-grid">
-            <!-- Profile Ownership Card -->
-            <div class="card profile-card-large" style="grid-column: 1 / -1; max-width: 800px; margin: 0 auto;">
-                <div class="profile-card-bg"></div>
-                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="Profile" class="profile-avatar-large">
-                
-                <h2 class="profile-name">John Doe</h2>
-                <span class="profile-role">Premium Member</span>
-                
-                <div class="profile-details">
-                    <div class="detail-item">
-                        <span class="detail-label">Account ID</span>
-                        <span class="detail-value">EAD-8842-109</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Email</span>
-                        <span class="detail-value">john.doe@example.com</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Phone</span>
-                        <span class="detail-value">+234 800 123 4567</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Member Since</span>
-                        <span class="detail-value">August 2024</span>
-                    </div>
+          
+          <!-- Account Details Widget -->
+          <div class="stat-card" style="background: linear-gradient(135deg, #0f172a 0%, #334155 100%); color: white; position: relative;">
+            <div style="display:flex; justify-content:space-between; align-items:start; width:100%">
+               <div>
+                  <div class="stat-icon" style="background: rgba(255,255,255,0.1); color: white;"><i class="fas fa-university"></i></div>
+                  <div class="stat-info">
+                     <p style="color: rgba(255,255,255,0.7);">Account Details</p>
+                     <h3 style="color: white; font-size: 1.5rem; letter-spacing: 2px;" id="account-number">Loading...</h3>
+                     <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 5px;">E-Adem Savings</p>
+                  </div>
+               </div>
+               <button class="btn btn-sm" onclick="copyAccountNum()" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; font-size: 0.8rem; padding: 4px 10px;">
+                   <i class="far fa-copy"></i> Copy
+               </button>
+            </div>
+            <div style="margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; display: flex; justify-content: space-between;">
+               <span>Sort Code: <strong>058123</strong></span>
+               <span style="color: #4ade80;"><i class="fas fa-check-circle"></i> Active</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div style="display:flex; justify-content:space-between; align-items:start; width:100%">
+                <div>
+                   <div class="stat-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                   <div class="stat-info">
+                      <p>Active Loan</p>
+                      <h3 id="active-loan-amount">₦0.00</h3>
+                   </div>
+                </div>
+                <!-- Status Badge -->
+                <div id="active-loan-status" style="background: #ecfdf5; color: var(--success-green); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                    No Active Loans
                 </div>
             </div>
-
-            <!-- Quick Stats -->
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-wallet"></i>
-                </div>
-                <div class="stat-info">
-                    <p>Total Balance</p>
-                    <h3>₦0.00</h3>
-                </div>
+            <!-- Progress Bar -->
+            <div style="margin-top: 15px; width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
+                <div id="loan-progress" style="width: 0%; height: 100%; background: var(--accent-blue); transition: width 0.5s;"></div>
             </div>
+            <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 5px; text-align: right;">0% Repaid</p>
+          </div>
 
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-file-invoice-dollar"></i>
-                </div>
-                <div class="stat-info">
-                    <p>Active Loans</p>
-                    <h3>0</h3>
-                </div>
-            </div>
+          <div class="stat-card">
+             <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+             <div class="stat-info">
+                <p>Investment Value</p>
+                <h3>₦0.00</h3>
+             </div>
+             <div style="margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-color); width: 100%;">
+                <span style="color: var(--success-green); font-size: 0.85rem; font-weight: 600;">
+                    <i class="fas fa-arrow-up"></i> 0%
+                </span>
+                <span style="color: var(--text-secondary); font-size: 0.85rem;"> vs last month</span>
+             </div>
+          </div>
+        </div>
 
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-briefcase"></i>
-                </div>
-                <div class="stat-info">
-                    <p>Investment Status</p>
-                    <h3>Active</h3>
-                </div>
+        <!-- Recent Transactions Section -->
+        <h3 style="margin: 32px 0 24px; color: var(--primary-blue); display: flex; justify-content: space-between; align-items: center;">
+            Recent Transactions
+            <a href="#" style="font-size: 0.9rem; color: var(--accent-blue); text-decoration: none;">View All</a>
+        </h3>
+        
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <div class="table-responsive">
+                <table class="transaction-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transaction-list">
+                        <!-- Mock Data will be injected here -->
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-secondary);">Loading transactions...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
+      </div>
+
+      <!-- View: My Profile -->
+      <div id="view-profile" class="dashboard-view">
+        <div class="profile-container">
+            <!-- Header Card -->
+             <div class="profile-header-card">
+                 <div class="profile-banner-section"></div>
+                 <div class="profile-user-section">
+                     <div class="profile-avatar-container">
+                         <img src="images/default-avatar.png" alt="Profile" class="profile-avatar-large" id="profile-image-preview" />
+                         <label for="profile-upload" class="profile-upload-btn">
+                             <i class="fas fa-camera"></i>
+                         </label>
+                         <input type="file" id="profile-upload" accept="image/*" style="display: none;">
+                     </div>
+                     <div class="profile-identity">
+                         <h2 class="profile-name">Loading...</h2>
+                         <span class="profile-badge">Verified Member</span>
+                     </div>
+                     <button id="upload-btn" class="btn btn-sm" style="display: none; background: var(--success-green); border: none;">Save Photo</button>
+                 </div>
+             </div>
+
+             <!-- Details Grid -->
+             <div class="profile-grid-layout">
+                 <!-- Personal Info -->
+                 <div class="profile-section-card">
+                     <div class="profile-section-header">
+                         <h3><i class="fas fa-user-circle"></i> Personal Details</h3>
+                         <button id="save-profile-btn" class="btn btn-sm" style="background: var(--accent-blue); color: white; border: none; padding: 6px 14px; font-size: 0.9rem;">
+                             <i class="fas fa-save"></i> Save Changes
+                         </button>
+                     </div>
+                     <form id="profile-form">
+                         <div class="profile-detail-list">
+                             <div class="profile-detail-item">
+                                 <div class="detail-label-flex">
+                                     <div class="detail-icon-box"><i class="fas fa-envelope"></i></div>
+                                     <span>Email Address</span>
+                                 </div>
+                                 <input type="email" id="profile-email" class="form-control profile-input" readonly style="background: var(--light-gray); cursor: not-allowed;">
+                             </div>
+                             <div class="profile-detail-item">
+                                 <div class="detail-label-flex">
+                                     <div class="detail-icon-box"><i class="fas fa-phone"></i></div>
+                                     <span>Phone Number</span>
+                                 </div>
+                                 <input type="tel" id="profile-phone" class="form-control profile-input" placeholder="Enter phone number">
+                             </div>
+                             <div class="profile-detail-item">
+                                 <div class="detail-label-flex">
+                                     <div class="detail-icon-box"><i class="fas fa-map-marker-alt"></i></div>
+                                     <span>Address</span>
+                                 </div>
+                                 <input type="text" id="profile-address" class="form-control profile-input" placeholder="Enter residential address">
+                             </div>
+                             <div class="profile-detail-item">
+                                <div class="detail-label-flex">
+                                    <div class="detail-icon-box"><i class="fas fa-id-card"></i></div>
+                                    <span>NIN (11 Digits)</span>
+                                </div>
+                                <input type="text" id="profile-nin" class="form-control profile-input" placeholder="Enter 11-digit NIN" maxlength="11" pattern="\d{11}">
+                            </div>
+                            <small class="text-muted" style="display: block; text-align: right; font-size: 0.8rem; color: var(--text-secondary);">*NIN will be locked after verification</small>
+                         </div>
+                     </form>
+                 </div>
+
+                 <!-- Account Info -->
+                 <div class="profile-section-card">
+                     <div class="profile-section-header">
+                         <h3><i class="fas fa-shield-alt"></i> Account Status</h3>
+                     </div>
+                     <div class="profile-detail-list">
+                         <div class="profile-detail-item">
+                             <div class="detail-label-flex">
+                                 <div class="detail-icon-box"><i class="fas fa-fingerprint"></i></div>
+                                 <span>Account ID</span>
+                             </div>
+                             <span class="detail-value-text profile-id">Loading...</span>
+                         </div>
+                         <div class="profile-detail-item">
+                             <div class="detail-label-flex">
+                                 <div class="detail-icon-box"><i class="fas fa-calendar-alt"></i></div>
+                                 <span>Member Since</span>
+                             </div>
+                             <span class="detail-value-text profile-date">Loading...</span>
+                         </div>
+                         <div class="profile-detail-item">
+                             <div class="detail-label-flex">
+                                 <div class="detail-icon-box"><i class="fas fa-user-check"></i></div>
+                                 <span>NIN Status</span>
+                             </div>
+                             <span id="nin-status-badge" class="status-badge status-pending">Unverified</span>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+        </div>
+      </div>
+
+      <!-- View: Apply for Service -->
+      <div id="view-apply" class="dashboard-view">
+        <div class="container" style="max-width: 900px">
+          <h2 style="margin-bottom: 20px">Make a New Request</h2>
+          <div class="application-form-container">
+               <!-- Form content remains same, handled by JS -->
+               <div style="text-align:center; padding: 40px;">
+                   <i class="fas fa-file-signature" style="font-size: 3rem; color: var(--accent-blue); margin-bottom: 20px;"></i>
+                   <h3>Submit a New Application</h3>
+                   <p style="color: var(--text-secondary); margin-bottom: 30px;">Choose from Loans, Investments, or Forex Classes.</p>
+                   <a href="application.html" class="btn btn-primary">Go to Application Page</a>
+               </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- View: My Loans -->
+      <div id="view-loans" class="dashboard-view">
+          <h2 style="margin-bottom: 24px;">My Loans</h2>
+          <div class="dashboard-grid">
+              <!-- Re-using the active loan card style -->
+              <div class="stat-card" id="loans-page-active-card">
+                <div style="display:flex; justify-content:space-between; align-items:start; width:100%">
+                    <div>
+                       <div class="stat-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                       <div class="stat-info">
+                          <p>Active Loan Balance</p>
+                          <h3 id="loans-page-amount">₦0.00</h3>
+                       </div>
+                    </div>
+                    <div id="loans-page-status" class="status-badge status-success">No Active Loans</div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <p style="font-size: 0.9rem; margin-bottom: 5px;">Repayment Progress</p>
+                    <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                        <div id="loans-page-progress" style="width: 0%; height: 100%; background: var(--accent-blue);"></div>
+                    </div>
+                    <p style="text-align: right; font-size: 0.8rem; margin-top: 5px; color: var(--text-secondary);">0% Repaid</p>
+                </div>
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <button class="btn btn-sm btn-outline-primary" style="flex: 1;">Repayment History</button>
+                    <button class="btn btn-sm" style="flex: 1; background: var(--accent-blue); color: white; border: none;">Pay Now</button>
+                </div>
+              </div>
+
+              <!-- Apply New Loan Card -->
+              <div class="card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px;">
+                  <div style="width: 60px; height: 60px; background: var(--light-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-blue); font-size: 1.5rem; margin-bottom: 15px;">
+                      <i class="fas fa-plus"></i>
+                  </div>
+                  <h3>Need Funds?</h3>
+                  <p style="color: var(--text-secondary); margin-bottom: 20px;">Apply for a new loan today with competitive interest rates.</p>
+                  <a href="application.html" class="btn btn-primary">Apply Now</a>
+              </div>
+          </div>
+          
+          <h3 style="margin-top: 40px; margin-bottom: 20px;">Loan History</h3>
+          <div class="card" style="padding: 0;">
+              <div class="table-responsive">
+                  <table class="transaction-table">
+                      <thead>
+                          <tr>
+                              <th>Loan ID</th>
+                              <th>Date</th>
+                              <th>Amount</th>
+                              <th>Status</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                              <td colspan="4" style="text-align: center; padding: 20px; color: var(--text-secondary);">No loan history found.</td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+      </div>
+
+      <!-- View: Investments -->
+      <div id="view-investments" class="dashboard-view">
+          <h2 style="margin-bottom: 24px;">My Investments</h2>
+          <div class="dashboard-grid">
+              <div class="stat-card">
+                 <div class="stat-icon"><i class="fas fa-chart-pie"></i></div>
+                 <div class="stat-info">
+                    <p>Total Portfolio Value</p>
+                    <h3>₦0.00</h3>
+                 </div>
+                 <div style="margin-top: 15px;">
+                     <span class="status-badge status-success">+ 0% Returns</span>
+                 </div>
+              </div>
+
+              <div class="card" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                  <h3>Start Investing</h3>
+                  <p style="opacity: 0.9; margin-bottom: 20px;">Grow your wealth with our secrued investment plans.</p>
+                  <a href="application.html" class="btn" style="background: white; color: #059669; border: none;">View Plans</a>
+              </div>
+          </div>
+
+          <h3 style="margin-top: 40px; margin-bottom: 20px;">Active Plans</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+              <div class="card">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                      <h4 style="color: var(--primary-blue);">Gold Plan (6 Months)</h4>
+                      <span class="status-badge">Available</span>
+                  </div>
+                  <h2 style="margin-bottom: 10px;">10% <small style="font-size: 1rem; color: var(--text-secondary); font-weight: 400;">ROI</small></h2>
+                  <p style="color: var(--text-secondary); margin-bottom: 20px;">Secure short-term growth.</p>
+                  <a href="application.html" class="btn btn-outline-primary" style="width: 100%;">Invest Now</a>
+              </div>
+               <div class="card">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                      <h4 style="color: var(--primary-blue);">Platinum Plan (1 Year)</h4>
+                      <span class="status-badge">Available</span>
+                  </div>
+                  <h2 style="margin-bottom: 10px;">25% <small style="font-size: 1rem; color: var(--text-secondary); font-weight: 400;">ROI</small></h2>
+                  <p style="color: var(--text-secondary); margin-bottom: 20px;">Maximize returns with long-term lock.</p>
+                  <a href="application.html" class="btn btn-outline-primary" style="width: 100%;">Invest Now</a>
+              </div>
+          </div>
+      </div>
+
+      <!-- View: Forex -->
+      <div id="view-forex" class="dashboard-view">
+          <h2 style="margin-bottom: 24px;">Forex Trading Academy</h2>
+          <div class="dashboard-hero" style="background: linear-gradient(135deg, #4f46e5, #4338ca); padding: 30px;">
+              <div style="color: white; max-width: 600px;">
+                  <h1>Master the Markets</h1>
+                  <p style="margin-bottom: 20px; font-size: 1.1rem; opacity: 0.9;">Join our expert-led forex classes and learn profitable trading strategies.</p>
+                  <div style="display: flex; gap: 10px;">
+                      <a href="application.html" class="btn" style="background: white; color: #4338ca; border: none;">Enroll Now</a>
+                      <button class="btn" style="border: 1px solid rgba(255,255,255,0.3); color: white;">View Curriculum</button>
+                  </div>
+              </div>
+          </div>
+
+          <h3 style="margin-top: 30px; margin-bottom: 20px;">Market Signals (Live)</h3>
+           <div class="card">
+              <div class="table-responsive">
+                  <table class="transaction-table">
+                      <thead>
+                          <tr>
+                              <th>Pair</th>
+                              <th>Action</th>
+                              <th>Entry</th>
+                              <th>Take Profit</th>
+                              <th>Stop Loss</th>
+                              <th>Status</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                              <td style="font-weight: 600;">EUR/USD</td>
+                              <td style="color: var(--success-green);">BUY</td>
+                              <td>1.0850</td>
+                              <td>1.0920</td>
+                              <td>1.0820</td>
+                              <td><span class="status-badge status-success">Active</span></td>
+                          </tr>
+                           <tr>
+                              <td style="font-weight: 600;">GBP/JPY</td>
+                              <td style="color: #ef4444;">SELL</td>
+                              <td>182.40</td>
+                              <td>181.00</td>
+                              <td>183.00</td>
+                              <td><span class="status-badge status-pending">Pending</span></td>
+                          </tr>
+                      </tbody>
+                  </table>
+                  <p style="text-align: center; padding: 10px; font-size: 0.8rem; color: var(--text-secondary);">Premium members see signals in real-time.</p>
+              </div>
+          </div>
+      </div>
+      
+      <!-- View: Settings -->
+      <div id="view-settings" class="dashboard-view">
+          <h2 style="margin-bottom: 24px;">Account Settings</h2>
+          
+          <div class="row" style="display: flex; gap: 24px; flex-wrap: wrap;">
+             <!-- Security Section -->
+             <div class="card" style="flex: 1; min-width: 300px;">
+                 <h3 style="margin-bottom: 20px; color: var(--primary-blue);"><i class="fas fa-shield-alt"></i> Security</h3>
+                 <form id="settings-password-form">
+                     <div class="form-group">
+                         <label>Current Password</label>
+                         <input type="password" class="form-control" placeholder="••••••••">
+                     </div>
+                     <div class="form-group">
+                         <label>New Password</label>
+                         <input type="password" class="form-control" placeholder="••••••••">
+                     </div>
+                     <button class="btn btn-primary" style="width: 100%;">Update Password</button>
+                 </form>
+                 
+                 <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border-color);">
+                 
+                 <div style="display: flex; justify-content: space-between; align-items: center;">
+                     <div>
+                         <h4 style="margin-bottom: 5px;">2-Factor Authentication</h4>
+                         <p style="font-size: 0.85rem; color: var(--text-secondary);">Secure your account with OTP.</p>
+                     </div>
+                     <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider round"></span>
+                     </label>
+                 </div>
+             </div>
+
+             <!-- Preferences Section -->
+             <div class="card" style="flex: 1; min-width: 300px;">
+                 <h3 style="margin-bottom: 20px; color: var(--primary-blue);"><i class="fas fa-sliders-h"></i> Preferences</h3>
+                 
+                 <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                     <div>
+                         <h4 style="margin-bottom: 5px;">Email Notifications</h4>
+                         <p style="font-size: 0.85rem; color: var(--text-secondary);">Receive updates on your investments.</p>
+                     </div>
+                     <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider round"></span>
+                     </label>
+                 </div>
+
+                 <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                     <div>
+                         <h4 style="margin-bottom: 5px;">SMS Alerts</h4>
+                         <p style="font-size: 0.85rem; color: var(--text-secondary);">Get instant alerts on transactions.</p>
+                     </div>
+                     <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider round"></span>
+                     </label>
+                 </div>
+                 
+                 <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                     <div>
+                         <h4 style="margin-bottom: 5px;">Dark Mode</h4>
+                         <p style="font-size: 0.85rem; color: var(--text-secondary);">Switch between light and dark themes.</p>
+                     </div>
+                     <label class="switch">
+                        <input type="checkbox" id="settings-theme-toggle">
+                        <span class="slider round"></span>
+                     </label>
+                 </div>
+             </div>
+          </div>
+          
+          <!-- Danger Zone -->
+          <div class="card" style="margin-top: 24px; border: 1px solid #fee2e2;">
+              <h3 style="margin-bottom: 15px; color: #ef4444;"><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+              <p style="margin-bottom: 20px; color: var(--text-secondary);">Once you delete your account, there is no going back. Please be certain.</p>
+              <button class="btn" style="background: #ef4444; color: white; border: none;">Delete Account</button>
+          </div>
+      </div>
+
     </main>
 
     <script>
-        // Simple script for sidebar toggle
-        const toggleBtn = document.getElementById('sidebarToggle');
-        const sidebar = document.getElementById('sidebar');
-        
-        // Show toggle button on mobile
-        if(window.innerWidth <= 992) {
-            toggleBtn.style.display = 'block';
+      // Simple script for sidebar toggle
+      const toggleBtn = document.getElementById("sidebarToggle");
+      const sidebar = document.getElementById("sidebar");
+
+      // Show toggle button on mobile
+      if (window.innerWidth <= 992) {
+        toggleBtn.style.display = "block";
+      }
+
+      window.addEventListener("resize", () => {
+        if (window.innerWidth <= 992) {
+          toggleBtn.style.display = "block";
+        } else {
+          toggleBtn.style.display = "none";
         }
+      });
 
-        window.addEventListener('resize', () => {
-            if(window.innerWidth <= 992) {
-                toggleBtn.style.display = 'block';
-            } else {
-                toggleBtn.style.display = 'none';
-            }
-        });
+      toggleBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("active");
+      });
 
-        toggleBtn.addEventListener('click', () => {
-             sidebar.classList.toggle('active');
-        });
-
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', (e) => {
-            if(window.innerWidth <= 992 && 
-               !sidebar.contains(e.target) && 
-               !toggleBtn.contains(e.target) &&
-               sidebar.classList.contains('active')) {
-                sidebar.classList.remove('active');
-            }
-        });
+      // Close sidebar when clicking outside on mobile
+      document.addEventListener("click", (e) => {
+        if (
+          window.innerWidth <= 992 &&
+          !sidebar.contains(e.target) &&
+          !toggleBtn.contains(e.target) &&
+          sidebar.classList.contains("active")
+        ) {
+          sidebar.classList.remove("active");
+        }
+      });
     </script>
     <script src="main.js"></script>
-    <script src="auth.js"></script>
-</body>
+    <script src="auth-v2.js"></script>
+  </body>
 </html>

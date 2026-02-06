@@ -123,7 +123,7 @@ class FormValidator {
     const form = document.getElementById(formId);
     if (!form) return;
     
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       let isValid = true;
       
@@ -150,8 +150,49 @@ class FormValidator {
       }
       
       if (isValid) {
-        alert('Form submitted successfully! (This is a demo - no actual submission)');
-        form.reset();
+        // Specific logic for Contact Form
+        if (formId === 'contact-form') {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+
+            try {
+                const formData = {
+                    name: form.querySelector('#name').value,
+                    email: form.querySelector('#email').value,
+                    phone: form.querySelector('#phone').value,
+                    subject: form.querySelector('#subject').value,
+                    message: form.querySelector('#message').value
+                };
+
+                const response = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('Message sent successfully!');
+                    form.reset();
+                } else {
+                    alert('Error sending message: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Contact error:', error);
+                alert('Failed to send message. Please try again.');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        } 
+        // Logic for other legacy forms (if any still exist)
+        else {
+             alert('Form submitted successfully!');
+             form.reset();
+        }
       } else {
         alert('Please fill in all required fields correctly.');
       }

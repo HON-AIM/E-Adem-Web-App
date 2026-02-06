@@ -84,41 +84,32 @@
             width: 100%;
             padding: 15px;
             font-size: 1.1rem;
-            background: var(--success);
+            background: var(--success-green);
         }
 
         .submit-btn:hover {
             background: #38a169;
         }
     </style>
+    <script>
+        // Check authentication immediately
+        fetch('/api/user').then(response => {
+            if (!response.ok) window.location.href = 'login.html';
+        }).catch(() => window.location.href = 'login.html');
+    </script>
 </head>
 <body>
     <!-- Header -->
     <header>
-        <div class="container nav-container">
-            <a href="index.html" class="logo-link">
+        <div class="container nav-container" style="justify-content: space-between;">
+            <a href="dashboard.html" class="logo-link">
                 <img src="./images/logo.png" alt="E-Adem" class="logo-img">
             </a>
             <div class="header-actions">
-                <a href="login.html" class="btn btn-outline header-login-btn">Login</a>
-                <button class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
-                <button class="theme-toggle" aria-label="Toggle theme">
-                    <span class="theme-icon"><i class="fas fa-moon"></i></span>
-                </button>
+                <a href="dashboard.html" class="btn btn-primary" style="background: var(--accent-blue); color: white; border: none; padding: 10px 20px; border-radius: 5px; font-weight: 600;">
+                    <i class="fas fa-arrow-left" style="margin-right: 8px;"></i> Back to Dashboard
+                </a>
             </div>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="about.html">About Us</a></li>
-                    <li><a href="services.html">Services</a></li>
-                    <li><a href="application.html">Apply Now</a></li>
-                    <li><a href="team.html">Team</a></li>
-                    <li><a href="ceo-mindset.html">CEO Mindset</a></li>
-                    <li><a href="market-insights.html">Market Insights</a></li>
-                    <li><a href="testimonials.html">Testimonials</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                </ul>
-            </nav>
         </div>
     </header>
 
@@ -194,6 +185,40 @@
                                 <label>Purpose of Loan</label>
                                 <textarea name="loanPurpose" class="form-control" rows="3" placeholder="Briefly describe what you need the loan for..."></textarea>
                             </div>
+                            
+                            <!-- New Requirements -->
+                            <div class="form-group">
+                                <label>National Identification Number (NIN) *</label>
+                                <input type="text" name="nin" class="form-control" placeholder="11-digit NIN" pattern="\d{11}" title="Please enter a valid 11-digit NIN">
+                                <small class="form-text text-muted">Your NIN will be verified instantly.</small>
+                            </div>
+
+                            <div class="guarantor-section" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                <h4 style="margin-bottom: 15px; color: #2d3748; font-size: 1.1rem;">Guarantor Information</h4>
+                                
+                                <div class="form-group">
+                                    <label>Guarantor Full Name *</label>
+                                    <input type="text" name="guarantorName" class="form-control" placeholder="Guarantor's Full Name">
+                                </div>
+                                <div class="row" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                                    <div class="form-group" style="flex: 1;">
+                                        <label>Guarantor Phone *</label>
+                                        <input type="tel" name="guarantorPhone" class="form-control" placeholder="Guarantor's Phone">
+                                    </div>
+                                    <div class="form-group" style="flex: 1;">
+                                        <label>Guarantor Email</label>
+                                        <input type="email" name="guarantorEmail" class="form-control" placeholder="Guarantor's Email">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Relationship *</label>
+                                    <input type="text" name="guarantorRelationship" class="form-control" placeholder="e.g. Sibling, Colleague">
+                                </div>
+                                <div class="form-group">
+                                    <label>Guarantor Address *</label>
+                                    <textarea name="guarantorAddress" class="form-control" rows="2" placeholder="Guarantor's Residential Address"></textarea>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Investment Fields -->
@@ -208,6 +233,23 @@
                                     <option value="Gold (6 Months)">Gold (6 Months - 10% ROI)</option>
                                     <option value="Platinum (1 Year)">Platinum (1 Year - 25% ROI)</option>
                                 </select>
+                            </div>
+                            
+                            <!-- Next of Kin for Investment -->
+                            <div class ="nok-section" style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                <h4 style="margin-bottom: 15px; color: #2d3748; font-size: 1.1rem;">Next of Kin Details</h4>
+                                <div class="form-group">
+                                    <label>Full Name *</label>
+                                    <input type="text" name="nokName" class="form-control" placeholder="Next of Kin Name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone Number *</label>
+                                    <input type="tel" name="nokPhone" class="form-control" placeholder="Next of Kin Phone">
+                                </div>
+                                <div class="form-group">
+                                    <label>Relationship *</label>
+                                    <input type="text" name="nokRelationship" class="form-control" placeholder="Relationship">
+                                </div>
                             </div>
                         </div>
 
@@ -227,6 +269,10 @@
                                     <option value="Online">Online via Zoom</option>
                                     <option value="Physical">Physical Class (Ibadan)</option>
                                 </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Trading Goals / Expectations</label>
+                                <textarea name="forexGoals" class="form-control" rows="2" placeholder="What do you hope to achieve?"></textarea>
                             </div>
                         </div>
                     </div>
