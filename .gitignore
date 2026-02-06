@@ -3,3 +3,4 @@ server.js
 models/
 seed.js
 .env
+private/
