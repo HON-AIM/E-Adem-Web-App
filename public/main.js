@@ -240,4 +240,58 @@ document.addEventListener('DOMContentLoaded', () => {
   FormValidator.validateForm('investment-form');
   FormValidator.validateForm('forex-registration-form');
   FormValidator.validateForm('contact-form');
+
+  // 5. Load Dynamic Content
+  loadDynamicContent();
 });
+
+async function loadDynamicContent() {
+    try {
+        const response = await fetch('/api/content');
+        if (!response.ok) return;
+        
+        const content = await response.json();
+        
+        // Find all elements waiting for content
+        document.querySelectorAll('[data-content-key]').forEach(el => {
+            const key = el.dataset.contentKey;
+            if (content[key]) {
+                // Determine update method based on tag
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                    el.value = content[key];
+                } else {
+                    el.textContent = content[key];
+                }
+            }
+        });
+
+        // Special Handling for Announcement Banner
+        if (content.announcement && content.announcement.trim() !== '') {
+            showAnnouncement(content.announcement);
+        }
+
+    } catch (error) {
+        console.error('Failed to load dynamic content:', error);
+    }
+}
+
+function showAnnouncement(text) {
+    // Check if banner exists
+    let banner = document.getElementById('announcement-banner');
+    if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'announcement-banner';
+        banner.style.cssText = `
+            background: var(--accent-blue);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1000;
+            animation: slideDown 0.5s ease;
+        `;
+        document.body.prepend(banner);
+    }
+    banner.textContent = text;
+}

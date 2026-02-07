@@ -400,16 +400,7 @@ function setupProfileUpload() {
 }
 
 // --- NEW: Copy Function ---
-function copyAccountNum() {
-    const num = document.getElementById('account-number').textContent;
-    navigator.clipboard.writeText(num).then(() => {
-        alert('Account Number Copied: ' + num);
-    }).catch(err => {
-        console.error('Failed to copy: ', err);
-        // Fallback
-        alert('Account Number: ' + num);
-    });
-}
+
 
 // --- NEW: Copy Function ---
 function copyAccountNum() {
