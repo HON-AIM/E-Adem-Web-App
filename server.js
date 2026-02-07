@@ -55,10 +55,12 @@ mongoose.connect(MONGO_URI)
       console.log('MongoDB Connected Successfully');
       logToFile('MongoDB Connected Successfully');
   })
-  .catch(err => {
       console.error('MongoDB Connection Error:', err);
       logToFile('MongoDB Connection Error: ' + err);
   });
+
+// Trust Proxy (Required for Render/Heroku SSL)
+app.set('trust proxy', 1);
 
 const helmet = require('helmet');
 const { limiter, authLimiter } = require('./utils/security.js');
@@ -90,10 +92,12 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({ mongoUrl: MONGO_URI }),
+  proxy: true, // Required for Render
   cookie: { 
     maxAge: 1000 * 60 * 60 * 24, // 1 day
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production' 
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // Cross-site cookie fix
   }
 }));
 
