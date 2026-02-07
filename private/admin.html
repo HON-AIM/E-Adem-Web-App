@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | E-Adem Global</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-sidebar {
+            background: #1e293b;
+        }
+        .content-editor-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .content-editor-row label {
+            width: 200px;
+            font-weight: 600;
+        }
+        .editor-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+        }
+        .tab-btn.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+        .admin-section {
+            display: none;
+        }
+        .admin-section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+    <!-- Admin Sidebar -->
+    <aside class="sidebar admin-sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h3 style="color:white; margin: 0;">E-Adem Admin</h3>
+      </div>
+      
+      <div class="user-profile-mini">
+        <div style="width: 40px; height: 40px; background: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <div class="user-info-mini">
+          <h4>Admin User</h4>
+          <p style="color: #ef4444;">Administrator</p>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li><a href="#" class="active" onclick="switchAdminTab('users')"><i class="fas fa-users"></i> User Management</a></li>
+        <li><a href="#" onclick="switchAdminTab('content')"><i class="fas fa-edit"></i> Website Content</a></li>
+        <li><a href="#" onclick="switchAdminTab('applications')"><i class="fas fa-file-contract"></i> Applications</a></li>
+      </ul>
+
+      <div style="padding: 20px">
+        <button id="admin-logout" class="btn btn-outline" style="width: 100%; border-color: rgba(255,255,255,0.3); color: white;">Logout</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <div class="dashboard-topbar">
+            <h3>Admin Dashboard</h3>
+             <div class="theme-toggle"><span class="theme-icon">🌙</span></div>
+        </div>
+
+        <!-- Users Tab -->
+        <div id="tab-users" class="admin-section active">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; margin-bottom: 20px;">
+                    <h3>Registered Users</h3>
+                    <button class="btn btn-sm btn-primary" onclick="loadUsers()"><i class="fas fa-sync"></i> Refresh</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="transaction-table" id="users-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Contact</th>
+                                <th>Loan Status</th>
+                                <th>Last Active</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="5">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Editor Tab -->
+        <div id="tab-content" class="admin-section">
+            <div class="card">
+                <h3>Edit Website Content</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 30px;">Update text and settings across the main website in real-time.</p>
+                
+                <form id="content-form">
+                    <div class="content-editor-row">
+                        <label>Hero Welcome Title</label>
+                        <input type="text" name="heroTitle" class="editor-input" placeholder="Welcome to E-Adem...">
+                    </div>
+                    <div class="content-editor-row">
+                        <label>Investment Returns (%)</label>
+                        <input type="text" name="investRate" class="editor-input" placeholder="e.g. 20%">
+                    </div>
+                     <div class="content-editor-row">
+                        <label>Loan Interest Rate (%)</label>
+                        <input type="text" name="loanRate" class="editor-input" placeholder="e.g. 5%">
+                    </div>
+                    <div class="content-editor-row">
+                        <label>Announcement Banner</label>
+                        <textarea name="announcement" class="editor-input" rows="3" placeholder="Latest news..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Applications Tab -->
+        <div id="tab-applications" class="admin-section">
+             <div class="card">
+                 <h3>Manage Applications</h3>
+                 <div class="table-container">
+                    <table class="data-table" id="apps-table">
+                        <thead>
+                            <tr>
+                                <th>Applicant</th>
+                                <th>Type</th>
+                                <th>Details</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="6">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                 </div>
+             </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Simple Admin Scripts
+        function switchAdminTab(tabName) {
+            document.querySelectorAll('.admin-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            
+            // Sidebar active state
+            // (Simplified for demo)
+        }
+
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/admin/users');
+                if (!res.ok) {
+                    throw new Error(`Status: ${res.status}`);
+                }
+                const users = await res.json();
+                
+                // ... (table logic) ...
+                
+                const tbody = document.querySelector('#users-table tbody');
+                tbody.innerHTML = users.map(user => {
+                    // Escape Function to prevent XSS
+                    const escapeHtml = (unsafe) => {
+                        return unsafe
+                             .replace(/&/g, "&amp;")
+                             .replace(/</g, "&lt;")
+                             .replace(/>/g, "&gt;")
+                             .replace(/"/g, "&quot;")
+                             .replace(/'/g, "&#039;");
+                    };
+
+                    const safeName = escapeHtml(user.fullName);
+                    const safeEmail = escapeHtml(user.email);
+                    const safePhone = user.phone ? escapeHtml(user.phone) : '';
+                    
+                    // NIN Verification Button
+                    let ninAction = '';
+                    if (user.nin && !user.isNinVerified) {
+                        ninAction = `<button class="btn btn-sm btn-primary" style="margin-top:5px; font-size:0.7rem;" onclick="verifyNin('${user._id}')">Verify NIN: ${escapeHtml(user.nin)}</button>`;
+                    } else if (user.isNinVerified) {
+                        ninAction = `<div style="font-size:0.7rem; color:#10b981"><i class="fas fa-check-circle"></i> NIN Verified</div>`;
+                    }
+
+                    // Calculate Last Active
+                    const lastActive = user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never';
+                    
+                    // Calculate Loan Status
+                    let loanStatusHtml = '<span class="status-badge status-success">No Loan</span>';
+                    if (user.activeLoanAmount > 0) {
+                        let statusClass = 'status-pending'; // Orange for active
+                        let statusText = 'Active';
+                        
+                        // Check for Overdue
+                        if (user.loanApprovedAt && user.loanDuration) {
+                             const approvedDate = new Date(user.loanApprovedAt);
+                             let months = 1;
+                             if (user.loanDuration.includes('3 Months')) months = 3;
+                             if (user.loanDuration.includes('6 Months')) months = 6;
+                             if (user.loanDuration.includes('1 Year')) months = 12;
+                             
+                             const dueDate = new Date(approvedDate);
+                             dueDate.setMonth(dueDate.getMonth() + months);
+                             
+                             if (new Date() > dueDate) {
+                                 statusClass = 'status-failed'; // Red for overdue
+                                 statusText = 'OVERDUE';
+                             } else {
+                                 statusText += ` (Due: ${dueDate.toLocaleDateString()})`;
+                             }
+                        }
+                        
+                        loanStatusHtml = `
+                            <div style="font-weight:600">₦${user.activeLoanAmount.toLocaleString()}</div>
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        `;
+                    }
+
+                    return `
+                    <tr>
+                        <td>
+                            <div style="font-weight:600">${safeName}</div>
+                            <div style="font-size:0.8rem; color:#64748b; font-family:monospace;">${user._id}</div>
+                            ${ninAction}
+                        </td>
+                        <td>
+                            <div>${safeEmail}</div>
+                            <div style="font-size:0.85rem; color:#64748b">${safePhone}</div>
+                        </td>
+                        <td>${loanStatusHtml}</td>
+                        <td>${lastActive}</td>
+                        <td><span class="status-badge ${user.role === 'admin' ? 'status-failed' : 'status-success'}">${user.role}</span></td>
+                        <td>
+                           <div style="display:flex; gap:5px;">
+                                <button class="btn btn-sm btn-outline-primary" onclick="manageLoan('${user._id}')" title="Loan Action"><i class="fas fa-coins"></i></button>
+                                ${user.role !== 'admin' ? `<button class="btn btn-sm" style="background:#fee2e2; color:#ef4444; border:1px solid #fecaca;" onclick="deleteUser('${user._id}')" title="Delete User"><i class="fas fa-trash"></i></button>` : ''}
+                           </div>
+                        </td>
+                    </tr>
+                `}).join('');
+            } catch (err) {
+                console.error(err);
+                if (confirm(`Admin access failed (${err.message}). Try logging in again?`)) window.location.href = 'login.html';
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm('Are you SUPER SURE? This will permanently delete the user and all their loan history.')) return;
+            
+            try {
+                const res = await fetch(`/api/admin/user/${userId}`, { method: 'DELETE' });
+                const result = await res.json();
+                if (res.ok) {
+                    alert('User deleted.');
+                    loadUsers();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch(e) {
+                alert('Connection error deleting user');
+            }
+        }
+
+        async function manageLoan(userId) {
+            const action = prompt("Type 'approve' to Assign Loan or 'reject' to Clear Status:");
+            if (!action) return;
+            
+            let amount = 0;
+            if (action === 'approve') {
+                amount = prompt("Enter Loan Amount (Numbers only):");
+                if (!amount) return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/loan-action', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ userId, action, amount })
+                });
+                const result = await res.json();
+                alert(result.message);
+                loadUsers();
+            } catch(e) { alert('Error processing action'); }
+        }
+
+        // Content Save
+        document.getElementById('content-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const updates = Object.fromEntries(formData.entries());
+            
+            try {
+                const res = await fetch('/api/content', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ updates })
+                });
+                alert('Website content updated successfully!');
+            } catch(e) { alert('Failed to update content'); }
+        });
+        
+        // Logout
+        document.getElementById('admin-logout').addEventListener('click', async () => {
+             await fetch('/api/logout', { method: 'POST' });
+             window.location.href = 'login.html';
+        });
+
+        async function verifyNin(userId) {
+            if (!confirm('Confirm Identity: Are you sure this users NIN is valid?')) return;
+            try {
+                const res = await fetch('/api/admin/verify-nin', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ userId })
+                });
+                const result = await res.json();
+                alert(result.message);
+                loadUsers(); // Refresh
+            } catch (e) { alert('Error verifying NIN'); }
+        }
+
+        // ... existing functions ...
+        
+        async function loadApplications() {
+             try {
+                const res = await fetch('/api/admin/applications');
+                const apps = await res.json();
+                
+                const escapeHtml = (unsafe) => {
+                        return (unsafe || "")
+                             .replace(/&/g, "&amp;")
+                             .replace(/</g, "&lt;")
+                             .replace(/>/g, "&gt;")
+                             .replace(/"/g, "&quot;")
+                             .replace(/'/g, "&#039;");
+                };
+
+                const tbody = document.querySelector('#apps-table tbody');
+                tbody.innerHTML = apps.map(app => {
+                    let detailsHtml = '';
+                    if (app.details) {
+                        if (app.details.amount) detailsHtml += `<div>Amount: ₦${parseInt(app.details.amount).toLocaleString()}</div>`;
+                        if (app.details.duration) detailsHtml += `<div>Duration: ${escapeHtml(app.details.duration)}</div>`;
+                        if (app.details.purpose) detailsHtml += `<div>Purpose: ${escapeHtml(app.details.purpose)}</div>`;
+                    }
+                    
+                    let statusBadge = 'status-pending';
+                    if (app.status === 'Approved') statusBadge = 'status-success';
+                    if (app.status === 'Rejected') statusBadge = 'status-failed';
+
+                    // Actions
+                    let actionButtons = '';
+                    if (app.status === 'Pending') {
+                        actionButtons = `
+                            <button class="btn btn-sm btn-primary" onclick="appAction('${app._id}', 'approve')">Approve</button>
+                            <button class="btn btn-sm btn-outline-primary" style="color:red; border-color:red" onclick="appAction('${app._id}', 'reject')">Reject</button>
+                        `;
+                    } else {
+                        // Display status text for completed items
+                        let color = app.status === 'Approved' ? '#10b981' : '#ef4444';
+                        actionButtons = `<span style="color:${color}; font-size:0.8rem; margin-right:5px; font-weight:600">${app.status}</span>`;
+                    }
+                    
+                    // Always add delete button
+                    const deleteBtn = `<button class="btn btn-sm" style="background:#fee2e2; color:#ef4444; border:1px solid #fecaca; margin-left: 5px;" onclick="deleteApplication('${app._id}')" title="Delete"><i class="fas fa-trash"></i></button>`;
+
+                    const finalActions = `
+                        <div style="display:flex; align-items:center; gap:5px">
+                            ${actionButtons}
+                            ${deleteBtn}
+                        </div>
+                    `;
+
+                    return `
+                    <tr>
+                        <td>
+                            <div style="font-weight:600">${escapeHtml(app.fullName)}</div>
+                            <div style="font-size:0.8rem; color:#64748b">${app.email}</div>
+                        </td>
+                        <td><span class="status-badge status-pending" style="background:#e0f2fe; color:#0284c7">${app.type}</span></td>
+                        <td>${detailsHtml}</td>
+                        <td><span class="status-badge ${statusBadge}">${app.status}</span></td>
+                         <td>${new Date(app.createdAt).toLocaleDateString()}</td>
+                        <td>${finalActions}</td>
+                    </tr>
+                    `
+                }).join('');
+
+             } catch(e) {
+                 console.error(e);
+                 document.querySelector('#apps-table tbody').innerHTML = '<tr><td colspan="6">Error loading applications</td></tr>';
+             }
+        }
+
+        async function appAction(applicationId, action) {
+             // ... existing appAction code ...
+             if (!confirm(`Are you sure you want to ${action.toUpperCase()} this application?`)) return;
+            
+            try {
+                const res = await fetch('/api/admin/application-action', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ applicationId, action })
+                });
+                const result = await res.json();
+                alert(result.message);
+                loadApplications(); // Refresh list
+            } catch (e) {
+                alert('Action failed');
+            }
+        }
+        
+        async function deleteApplication(appId) {
+            if(!confirm('Permanently delete this application record?')) return;
+            try {
+                const res = await fetch(`/api/admin/application/${appId}`, { method: 'DELETE' });
+                const result = await res.json();
+                alert(result.message);
+                loadApplications();
+            } catch(e) { alert('Delete failed'); }
+        }
+
+        // Load initially
+        loadUsers();
+        // Load apps if we start on that tab (optional), or just call it:
+        loadApplications();
+    </script>
+</body>
+</html>
