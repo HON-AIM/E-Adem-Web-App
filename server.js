@@ -55,6 +55,7 @@ mongoose.connect(MONGO_URI)
       console.log('MongoDB Connected Successfully');
       logToFile('MongoDB Connected Successfully');
   })
+  .catch(err => {
       console.error('MongoDB Connection Error:', err);
       logToFile('MongoDB Connection Error: ' + err);
   });
@@ -87,19 +88,24 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Session Setup
+// Configure Session with better reliability
 app.use(session({
   secret: SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
+  resave: false,               // Don't save session if unmodified
+  saveUninitialized: false,    // Don't create session until something stored
   store: MongoStore.create({ mongoUrl: MONGO_URI }),
-  proxy: true, // Required for Render
   cookie: { 
     maxAge: 1000 * 60 * 60 * 24, // 1 day
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // Cross-site cookie fix
+    // Secure cookies require HTTPS. If not on HTTPS (localhost), this must be false.
+    // We can use a check or default to false for dev/testing unless explicitly 'production'
+    secure: process.env.NODE_ENV === 'production', 
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' 
   }
+ // removed proxy: true as it can cause issues if not behind a proxy
 }));
+
+const { sendWelcomeEmail } = require('./utils/email');
 
 // Routes
 
@@ -142,13 +148,24 @@ app.post('/api/register', async (req, res) => {
     // Log user in immediately
     req.session.userId = user._id;
 
-    res.status(201).json({ message: 'User registered successfully', user: { fullName: user.fullName, email: user.email } });
+    // Send Welcome Email (Async - don't block response)
+    // We only attempt this if it's set up
+    sendWelcomeEmail(user.email, user.fullName).catch(err => console.error('Email failed asynchronously', err));
+
+    // Explicitly save session before response
+    req.session.save((err) => {
+        if (err) {
+            console.error('Session Save Error:', err);
+            return res.status(500).json({ message: 'Error establishing session' });
+        }
+        res.status(201).json({ message: 'User registered successfully', user: { fullName: user.fullName, email: user.email } });
+    });
+
   } catch (error) {
     const msg = 'Server error during registration ' + timestamp;
     console.error('CRITICAL REGISTER ERROR:', error);
     if (error.stack) console.error(error.stack);
     logToFile(msg + ' ' + error.stack);
-    // Ensure we send the timestamp in the response to prove we are running this code
     res.status(500).json({ message: msg, error: error.message });
   }
 });
@@ -427,6 +444,39 @@ async function isAdmin(req, res, next) {
 // Admin Panel (Protected View)
 app.get('/admin', isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'private', 'admin.html'));
+});
+
+// SECRET SETUP ROUTE (For Initial Admin Creation)
+// Usage: /api/setup-admin?email=YOUR_EMAIL&secret=eadem_admin_setup_2026
+app.get('/api/setup-admin', async (req, res) => {
+    const { email, secret } = req.query;
+    const SETUP_SECRET = process.env.SETUP_SECRET || 'eadem_admin_setup_2026';
+
+    if (secret !== SETUP_SECRET) {
+        return res.status(403).json({ message: 'Invalid setup secret.' });
+    }
+
+    if (!email) {
+        return res.status(400).json({ message: 'Email query parameter is required.' });
+    }
+
+    try {
+        const user = await User.findOne({ email: email.toLowerCase() });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found. Please register first.' });
+        }
+
+        user.role = 'admin';
+        await user.save();
+
+        res.json({ 
+            message: `SUCCESS: User ${user.email} is now an Admin!`, 
+            nextStep: 'Please log out and log back in to access /admin panel.' 
+        });
+    } catch (error) {
+        console.error('Setup Admin Error:', error);
+        res.status(500).json({ message: 'Server error during setup.' });
+    }
 });
 
 // Get All Site Content (Public allowed? Or Admin only? Usually public needs to read it too)
