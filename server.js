@@ -105,7 +105,8 @@ app.use(session({
  // removed proxy: true as it can cause issues if not behind a proxy
 }));
 
-const { sendWelcomeEmail } = require('./utils/email');
+const crypto = require('crypto');
+const { sendWelcomeEmail, sendPasswordResetEmail } = require('./utils/email');
 
 // Routes
 
@@ -277,6 +278,79 @@ app.post('/api/user/update', async (req, res) => {
     }
 });
 
+// Delete Own Account
+app.delete('/api/user/delete', async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    try {
+        const user = await User.findById(req.session.userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Check for active loans
+        if (user.activeLoanAmount > 0) {
+            return res.status(400).json({ 
+                message: `Cannot delete account. Outstanding loan balance: ₦${user.activeLoanAmount.toLocaleString()}` 
+            });
+        }
+
+        // Delete Applications
+        await Application.deleteMany({ userId: user._id });
+
+        // Delete User
+        await User.findByIdAndDelete(user._id);
+
+        // Destroy Session
+        req.session.destroy(err => {
+            if (err) return res.status(500).json({ message: 'Account deleted but session clear failed' });
+            res.clearCookie('connect.sid');
+            res.json({ message: 'Account deleted successfully' });
+        });
+
+    } catch (error) {
+        console.error('Delete User Error:', error);
+        res.status(500).json({ message: 'Server error deleting account' });
+    }
+});
+
+// Change Password (Logged In)
+app.post('/api/user/change-password', async (req, res) => {
+    if (!req.session.userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    try {
+        const { currentPassword, newPassword } = req.body;
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ message: 'Both current and new passwords are required' });
+        }
+
+        const user = await User.findById(req.session.userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Verify Current Password
+        const isMatch = await user.comparePassword(currentPassword);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Incorrect current password' });
+        }
+
+        // Set New Password
+        user.password = newPassword;
+        await user.save(); // Pre-save hook hashes it
+
+        res.json({ message: 'Password updated successfully' });
+
+    } catch (error) {
+        console.error('Change Password Error:', error);
+        res.status(500).json({ message: 'Server error updating password' });
+    }
+});
+
 // Forgot Password
 app.post('/api/forgot-password', async (req, res) => {
     try {
@@ -288,18 +362,60 @@ app.post('/api/forgot-password', async (req, res) => {
         const user = await User.findOne({ email: email.toLowerCase() });
         if (!user) {
             // Security: Don't reveal if user exists
-            // But for this demo/user request, we might want to be explicit or just generic
-            // Let's use generic success message to mimic real security best practices
             return res.json({ message: 'If an account with that email exists, a reset link has been sent.' });
         }
 
-        // Simulating email sending
-        console.log(`[SIMULATION] Password reset link sent to ${email}`);
+        // Generate Token
+        const token = crypto.randomBytes(20).toString('hex');
+
+        // Set token and expiration (1 hour)
+        user.resetPasswordToken = token;
+        user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+        await user.save();
+
+        // Send Email
+        const host = req.headers.host;
+        sendPasswordResetEmail(user.email, token, host)
+            .catch(err => console.error('Error sending reset email async:', err));
         
         res.json({ message: 'If an account with that email exists, a reset link has been sent.' });
     } catch (error) {
         console.error('Forgot Password Error:', error);
         res.status(500).json({ message: 'Server error processing request' });
+    }
+});
+
+// Reset Password
+app.post('/api/reset-password', async (req, res) => {
+    try {
+        const { token, password } = req.body;
+
+        if (!token || !password) {
+            return res.status(400).json({ message: 'Token and new password are required' });
+        }
+
+        const user = await User.findOne({ 
+            resetPasswordToken: token, 
+            resetPasswordExpires: { $gt: Date.now() } 
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Password reset token is invalid or has expired.' });
+        }
+
+        // Set new password
+        user.password = password;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+
+        await user.save(); // Pre-save hook will hash password
+
+        res.json({ message: 'Password has been reset successfully! You can now log in.' });
+
+    } catch (error) {
+        console.error('Reset Password Error:', error);
+        res.status(500).json({ message: 'Server error resetting password' });
     }
 });
 

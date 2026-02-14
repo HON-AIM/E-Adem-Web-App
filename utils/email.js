@@ -59,6 +59,46 @@ const sendWelcomeEmail = async (userEmail, userName) => {
   }
 };
 
+// Function to send password reset email
+const sendPasswordResetEmail = async (userEmail, resetToken, host) => {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        console.warn('Email credentials not found. Password reset email skipped.');
+        return;
+    }
+
+    const resetUrl = `http://${host}/reset-password.html?token=${resetToken}`;
+
+    const mailOptions = {
+        from: `"E-Adem Global" <${process.env.EMAIL_USER}>`,
+        to: userEmail,
+        subject: 'Password Reset Request',
+        html: `
+            <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                <h2 style="color: #0044cc;">Password Reset Request</h2>
+                <p>You are receiving this because you (or someone else) have requested the reset of the password for your account.</p>
+                <p>Please click on the following link, or paste this into your browser to complete the process:</p>
+                <p><a href="${resetUrl}" style="background-color: #0044cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Reset Password</a></p>
+                <p>or copy and paste this link:</p>
+                <p>${resetUrl}</p>
+                <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
+                <br>
+                <p>Best Regards,</p>
+                <p><strong>The E-Adem Team</strong></p>
+            </div>
+        `
+    };
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Password reset email sent: %s', info.messageId);
+        return info;
+    } catch (error) {
+        console.error('Error sending password reset email:', error);
+        return null;
+    }
+};
+
 module.exports = {
-  sendWelcomeEmail
+  sendWelcomeEmail,
+  sendPasswordResetEmail
 };

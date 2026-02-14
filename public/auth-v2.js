@@ -128,6 +128,59 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- Reset Password Form Handling ---
+    const resetPasswordForm = document.getElementById('reset-password-form');
+    if (resetPasswordForm) {
+        // Get token from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        if (!token) {
+            alert('Invalid or missing reset token.');
+            window.location.href = 'login.html';
+        }
+
+        resetPasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (newPassword !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            const submitBtn = resetPasswordForm.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.textContent;
+            submitBtn.textContent = 'Resetting...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/reset-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token, password: newPassword })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(data.message);
+                    window.location.href = 'login.html';
+                } else {
+                    alert(data.message || 'Reset failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            } finally {
+                submitBtn.textContent = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
     // --- Dashboard Logic ---
     if (document.title.includes('Dashboard')) {
         fetchUserData();
@@ -660,24 +713,42 @@ function updateInvestmentsView(user) {
 }
 
 // --- NEW: Settings Logic ---
-function setupSettingsLogic() {
     // 1. Password Update
     const passwordForm = document.getElementById('settings-password-form');
     if (passwordForm) {
-        passwordForm.addEventListener('submit', (e) => {
+        passwordForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            // Mock API Call
+            
             const btn = passwordForm.querySelector('button');
             const originalText = btn.textContent;
             btn.textContent = 'Updating...';
             btn.disabled = true;
-            
-            setTimeout(() => {
-                alert('Password updated successfully!');
-                passwordForm.reset();
+
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+
+            try {
+                const response = await fetch('/api/user/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Password updated successfully!');
+                    passwordForm.reset();
+                } else {
+                    alert(data.message || 'Update failed');
+                }
+            } catch (error) {
+                console.error('Update Error:', error);
+                alert('An error occurred. Please try again.');
+            } finally {
                 btn.textContent = originalText;
                 btn.disabled = false;
-            }, 1000);
+            }
         });
     }
 
@@ -721,9 +792,28 @@ function setupSettingsLogic() {
             }
             
             if (confirm('Are you sure you want to permanently delete your account? This action cannot be undone.')) {
-                // Mock Deletion
-                alert('Account deleted successfully. Goodbye.');
-                window.location.href = 'index.html';
+                // Real Deletion
+                deleteBtn.textContent = 'Deleting...';
+                deleteBtn.disabled = true;
+
+                fetch('/api/user/delete', { method: 'DELETE' })
+                    .then(res => res.json().then(data => ({ status: res.status, body: data })))
+                    .then(({ status, body }) => {
+                        if (status === 200) {
+                            alert(body.message);
+                            window.location.href = 'index.html';
+                        } else {
+                            alert('Deletion Failed: ' + body.message);
+                            deleteBtn.textContent = 'Delete Account';
+                            deleteBtn.disabled = false;
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Delete Error:', err);
+                        alert('An error occurred while deleting account.');
+                        deleteBtn.textContent = 'Delete Account';
+                        deleteBtn.disabled = false;
+                    });
             }
         });
     }

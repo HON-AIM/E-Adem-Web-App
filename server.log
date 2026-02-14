@@ -2536,3 +2536,27 @@
     at process.processTimers (node:internal/timers:541:7)
 [2026-02-13T23:25:43.218Z] MongoDB Connection Error: MongooseServerSelectionError: connect ECONNREFUSED ::1:27017, connect ECONNREFUSED 127.0.0.1:27017
 [2026-02-13T23:31:25.146Z] MongoDB Connection Error: MongooseServerSelectionError: connect ECONNREFUSED ::1:27017, connect ECONNREFUSED 127.0.0.1:27017
+[2026-02-14T11:33:19.682Z] MongoDB Connection Error: MongooseServerSelectionError: connect ECONNREFUSED ::1:27017, connect ECONNREFUSED 127.0.0.1:27017
+[2026-02-14T13:19:24.100Z] MongoDB Connection Error: MongooseServerSelectionError: connect ECONNREFUSED ::1:27017, connect ECONNREFUSED 127.0.0.1:27017
+[2026-02-14T14:08:13.307Z] MongoDB Connected Successfully
+[2026-02-14T14:09:25.158Z] POST /api/register
+[2026-02-14T14:09:25.327Z] Register hit 1771078165326
+[2026-02-14T14:09:25.742Z] POST /api/forgot-password
+[2026-02-14T14:09:26.017Z] POST /api/reset-password
+[2026-02-14T14:09:26.370Z] POST /api/login
+[2026-02-14T14:15:00.117Z] MongoDB Connected Successfully
+[2026-02-14T14:30:30.689Z] POST /api/register
+[2026-02-14T14:30:30.712Z] Register hit 1771079430712
+[2026-02-14T14:30:30.879Z] DELETE /api/user/delete
+[2026-02-14T14:30:31.679Z] POST /api/login
+[2026-02-14T14:30:31.686Z] POST /api/register
+[2026-02-14T14:30:31.688Z] Register hit 1771079431688
+[2026-02-14T14:47:53.782Z] MongoDB Connected Successfully
+[2026-02-14T14:48:31.103Z] POST /api/register
+[2026-02-14T14:48:31.126Z] Register hit 1771080511126
+[2026-02-14T14:48:31.709Z] POST /api/user/change-password
+[2026-02-14T14:48:31.819Z] POST /api/user/change-password
+[2026-02-14T14:48:32.025Z] POST /api/logout
+[2026-02-14T14:48:32.035Z] POST /api/login
+[2026-02-14T14:48:32.129Z] POST /api/login
+[2026-02-14T14:49:12.647Z] MongoDB Connected Successfully
