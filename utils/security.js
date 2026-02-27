@@ -12,7 +12,7 @@ const limiter = rateLimit({
 // Stricter Limiter for Auth Routes (Login/Register)
 const authLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
-    max: 10, // Limit each IP to 5 login attempts per hour
+    max: 100, // Limit each IP to 100 login attempts per hour
     message: { message: 'Too many login attempts, please try again later' }
 });
 
