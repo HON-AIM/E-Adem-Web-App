@@ -817,4 +817,4 @@ function updateInvestmentsView(user) {
             }
         });
     }
-}
+// End of script
