@@ -561,7 +561,6 @@ async function fetchUserData() {
         
         if (amountSpan) {
              let bal = user.accountBalance || 0;
-             if(bal === 0) bal = 250450.00; // Mock starting balance
              
              // Store actual value in data attribute
              amountSpan.dataset.value = Number(bal).toLocaleString(undefined, {minimumFractionDigits: 2});
@@ -595,32 +594,37 @@ async function fetchUserData() {
             accNumDisplay.textContent = user.accountNumber || 'Generating...';
         }
 
-        // --- NEW: Populate Transaction Table (Mock Data) ---
+        // --- NEW: Populate Transaction Table ---
         const txnList = document.getElementById('transaction-list');
         if (txnList) {
-            const txns = [
-                { type: 'Credit', desc: 'Deposit via Bank Transfer', date: new Date().toLocaleDateString(), amount: 50000, status: 'Success' },
-                { type: 'Debit', desc: 'Airtime Purchase', date: new Date(Date.now() - 86400000).toLocaleDateString(), amount: -1000, status: 'Success' },
-                { type: 'Credit', desc: 'Loan Disbursement', date: new Date(Date.now() - 172800000).toLocaleDateString(), amount: 200000, status: 'Success' },
-                { type: 'Debit', desc: 'Netflix Subscription', date: new Date(Date.now() - 259200000).toLocaleDateString(), amount: -4500, status: 'Pending' }
-            ];
+            const txns = user.transactions || [];
 
             let html = '';
-            txns.forEach(t => {
-                const color = t.amount > 0 ? '#10b981' : '#ef4444';
-                const sign = t.amount > 0 ? '+' : '';
-                const badgeClass = t.status === 'Success' ? 'status-success' : (t.status === 'Pending' ? 'status-pending' : 'status-failed');
-                
-                html += `
+            if (txns.length === 0) {
+                html = `
                 <tr>
-                    <td><span style="font-weight:600;">${t.type}</span></td>
-                    <td>${t.desc}</td>
-                    <td>${t.date}</td>
-                    <td style="color: ${color}; font-weight: 600;">${sign}₦${Math.abs(t.amount).toLocaleString()}</td>
-                    <td><span class="status-badge ${badgeClass}">${t.status}</span></td>
+                    <td colspan="5" style="text-align: center; color: #6b7280; padding: 20px;">
+                        No recent transactions found.
+                    </td>
                 </tr>
                 `;
-            });
+            } else {
+                txns.forEach(t => {
+                    const color = t.amount > 0 ? '#10b981' : '#ef4444';
+                    const sign = t.amount > 0 ? '+' : '';
+                    const badgeClass = t.status === 'Success' ? 'status-success' : (t.status === 'Pending' ? 'status-pending' : 'status-failed');
+                    
+                    html += `
+                    <tr>
+                        <td><span style="font-weight:600;">${t.type}</span></td>
+                        <td>${t.desc}</td>
+                        <td>${new Date(t.date).toLocaleDateString()}</td>
+                        <td style="color: ${color}; font-weight: 600;">${sign}₦${Math.abs(t.amount).toLocaleString()}</td>
+                        <td><span class="status-badge ${badgeClass}">${t.status}</span></td>
+                    </tr>
+                    `;
+                });
+            }
             txnList.innerHTML = html;
         }
 
