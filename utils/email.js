@@ -59,6 +59,50 @@ const sendWelcomeEmail = async (userEmail, userName) => {
   }
 };
 
+// Function to send email verification link
+const sendVerificationEmail = async (userEmail, userName, verificationToken, host) => {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+        console.warn('Email credentials not found. Verification email skipped.');
+        return;
+    }
+
+    const verificationUrl = `http://${host}/api/verify-email?token=${verificationToken}`;
+
+    const mailOptions = {
+        from: `"E-Adem Global" <${process.env.EMAIL_USER}>`,
+        to: userEmail,
+        subject: 'Please Verify Your Email - E-Adem Global',
+        html: `
+            <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="color: #0044cc;">Verify Your Email Address</h2>
+                </div>
+                <p>Hello <strong>${userName}</strong>,</p>
+                <p>Thank you for registering with E-Adem Global Company Limited.</p>
+                <p>To secure your account and access all features, please verify your email address by clicking the button below:</p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="${verificationUrl}" style="background-color: #0044cc; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Verify Email Address</a>
+                </div>
+                <p>Or manually copy and paste this link into your browser:</p>
+                <p style="word-break: break-all; color: #555;">${verificationUrl}</p>
+                <p>If you did not create an account using this email address, please ignore this email.</p>
+                <br>
+                <p>Best Regards,</p>
+                <p><strong>The E-Adem Team</strong></p>
+            </div>
+        `
+    };
+
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Verification email sent: %s', info.messageId);
+        return info;
+    } catch (error) {
+        console.error('Error sending verification email:', error);
+        return null;
+    }
+};
+
 // Function to send password reset email
 const sendPasswordResetEmail = async (userEmail, resetToken, host) => {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
@@ -100,5 +144,6 @@ const sendPasswordResetEmail = async (userEmail, resetToken, host) => {
 
 module.exports = {
   sendWelcomeEmail,
+  sendVerificationEmail,
   sendPasswordResetEmail
 };

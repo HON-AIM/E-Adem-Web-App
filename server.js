@@ -7,6 +7,8 @@ const path = require('path');
 const User = require('./models/User');
 const Application = require('./models/Application');
 const SiteContent = require('./models/SiteContent');
+const Transaction = require('./models/Transaction');
+const axios = require('axios');
 const multer = require('multer');
 
 // Configure Multer for File Uploads
@@ -106,7 +108,7 @@ app.use(session({
 }));
 
 const crypto = require('crypto');
-const { sendWelcomeEmail, sendPasswordResetEmail } = require('./utils/email');
+const { sendWelcomeEmail, sendVerificationEmail, sendPasswordResetEmail } = require('./utils/email');
 
 // Routes
 
@@ -133,13 +135,18 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
+    // Generate Verification Token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    
     console.log('Creating new user instance...');
     // Create new user
     user = new User({
       fullName,
       email,
       password,
-      phone
+      phone,
+      emailVerificationToken: verificationToken,
+      emailVerificationExpires: Date.now() + 24 * 3600000 // 24 hours
     });
 
     console.log('Saving user to database...');
@@ -149,9 +156,9 @@ app.post('/api/register', async (req, res) => {
     // Log user in immediately
     req.session.userId = user._id;
 
-    // Send Welcome Email (Async - don't block response)
-    // We only attempt this if it's set up
-    sendWelcomeEmail(user.email, user.fullName).catch(err => console.error('Email failed asynchronously', err));
+    // Send Verification Email (Async - don't block response)
+    const host = req.headers.host;
+    sendVerificationEmail(user.email, user.fullName, verificationToken, host).catch(err => console.error('Email failed asynchronously', err));
 
     // Explicitly save session before response
     req.session.save((err) => {
@@ -169,6 +176,48 @@ app.post('/api/register', async (req, res) => {
     logToFile(msg + ' ' + error.stack);
     res.status(500).json({ message: msg, error: error.message });
   }
+});
+
+// Verify Email
+app.get('/api/verify-email', async (req, res) => {
+    try {
+        const { token } = req.query;
+        if (!token) {
+            return res.status(400).send('Invalid verification link.');
+        }
+
+        const user = await User.findOne({
+            emailVerificationToken: token,
+            emailVerificationExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).send(`
+                <div style="text-align:center; padding: 50px; font-family: sans-serif;">
+                    <h2 style="color: #ef4444;">Verification Failed</h2>
+                    <p>The verification link is invalid or has expired.</p>
+                    <a href="/login.html" style="color: #3b82f6;">Return to Login</a>
+                </div>
+            `);
+        }
+
+        user.isEmailVerified = true;
+        user.emailVerificationToken = undefined;
+        user.emailVerificationExpires = undefined;
+
+        await user.save();
+
+        res.send(`
+            <div style="text-align:center; padding: 50px; font-family: sans-serif;">
+                <h2 style="color: #10b981;">Email Verified Successfully!</h2>
+                <p>Thank you for verifying your email address.</p>
+                <a href="/dashboard.html" style="display:inline-block; margin-top:20px; padding: 10px 20px; background:#3b82f6; color:white; text-decoration:none; border-radius:5px;">Go to Dashboard</a>
+            </div>
+        `);
+    } catch (error) {
+        console.error('Email Verification Error:', error);
+        res.status(500).send('Server Error during verification.');
+    }
 });
 
 // Login
@@ -552,10 +601,37 @@ async function isAdmin(req, res, next) {
             return res.status(403).json({ message: 'Access denied: Admins only' });
         }
         next();
-    } catch (err) {
-        res.status(500).json({ message: 'Server error checking role' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server check error' });
     }
 }
+
+// Get Admin Stats for Overview
+app.get('/api/admin/stats', isAdmin, async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments({ role: 'user' });
+        
+        // Sum total active loans
+        const usersWithLoans = await User.find({ activeLoanAmount: { $gt: 0 } });
+        const totalActiveLoans = usersWithLoans.reduce((sum, u) => sum + u.activeLoanAmount, 0);
+        
+        // Applications stats
+        const pendingApplications = await Application.countDocuments({ status: 'Pending' });
+        
+        // Unverified Nin users count for quick action
+        const pendingNinVerifications = await User.countDocuments({ nin: { $exists: true, $ne: null }, isNinVerified: false });
+
+        res.json({
+            totalUsers,
+            totalActiveLoans,
+            pendingApplications,
+            pendingNinVerifications
+        });
+    } catch (error) {
+        console.error('Error fetching admin stats:', error);
+        res.status(500).json({ message: 'Error fetching stats' });
+    }
+});
 
 // Admin Panel (Protected View)
 app.get('/admin', isAdmin, (req, res) => {
@@ -790,6 +866,186 @@ app.delete('/api/admin/application/:id', isAdmin, async (req, res) => {
         res.json({ message: 'Application deleted successfully' });
     } catch (error) {
          res.status(500).json({ message: 'Error deleting application' });
+    }
+});
+
+// --- WALLET / PAYMENT ROUTES ---
+
+// Initialize Paystack Funding
+app.post('/api/wallet/initialize', async (req, res) => {
+    if (!req.session.userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    try {
+        const { amount } = req.body;
+        if (!amount || amount <= 0) return res.status(400).json({ message: 'Invalid amount' });
+
+        const user = await User.findById(req.session.userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        // Call Paystack
+        const paystackSecret = process.env.PAYSTACK_SECRET_KEY;
+        if (!paystackSecret) return res.status(500).json({ message: 'Payment gateway not configured' });
+
+        // Paystack uses kobo
+        const amountInKobo = Math.round(amount * 100);
+
+        const response = await axios.post('https://api.paystack.co/transaction/initialize', {
+            email: user.email,
+            amount: amountInKobo,
+            callback_url: `http://localhost:${PORT}/dashboard.html?payment=success` // Adjusted dynamically later
+        }, {
+            headers: {
+                Authorization: `Bearer ${paystackSecret}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = response.data;
+        if (!data.status) {
+            return res.status(400).json({ message: 'Failed to initialize payment' });
+        }
+
+        // Create Pending Transaction Object
+        await Transaction.create({
+            userId: user._id,
+            type: 'Funding',
+            amount: amount,
+            reference: data.data.reference,
+            status: 'Pending',
+            description: `Wallet Funding via Paystack`
+        });
+
+        res.json({
+            url: data.data.authorization_url,
+            reference: data.data.reference
+        });
+
+    } catch (error) {
+        console.error('Paystack Init Error:', error.response ? error.response.data : error.message);
+        res.status(500).json({ message: 'Error establishing connection with payment gateway.' });
+    }
+});
+
+// Verify Paystack Payment
+app.post('/api/wallet/verify', async (req, res) => {
+    if (!req.session.userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    try {
+        const { reference } = req.body;
+        if (!reference) return res.status(400).json({ message: 'Reference required' });
+
+        // Find the pending transaction
+        const transaction = await Transaction.findOne({ reference, userId: req.session.userId });
+        if (!transaction) return res.status(404).json({ message: 'Transaction record not found' });
+
+        if (transaction.status === 'Success') {
+            return res.json({ message: 'Payment already verified.', isSuccess: true });
+        }
+
+        const paystackSecret = process.env.PAYSTACK_SECRET_KEY;
+        if (!paystackSecret) return res.status(500).json({ message: 'Payment gateway not configured' });
+
+        const response = await axios.get(`https://api.paystack.co/transaction/verify/${reference}`, {
+            headers: {
+                Authorization: `Bearer ${paystackSecret}`
+            }
+        });
+
+        const data = response.data;
+        if (data.status && data.data.status === 'success') {
+            // Success - update DB atomically
+            transaction.status = 'Success';
+            await transaction.save();
+
+            const amountInNaira = data.data.amount / 100;
+            await User.updateOne(
+                { _id: req.session.userId },
+                { $inc: { accountBalance: amountInNaira } }
+            );
+
+            return res.json({ message: 'Payment successful! Wallet funded.', isSuccess: true });
+        } else {
+            transaction.status = 'Failed';
+            await transaction.save();
+            return res.status(400).json({ message: 'Payment verification failed or not successful.', isSuccess: false });
+        }
+
+    } catch (error) {
+        console.error('Paystack Verify Error:', error.response ? error.response.data : error.message);
+        res.status(500).json({ message: 'Verification error' });
+    }
+});
+
+// Internal Transfer
+app.post('/api/wallet/transfer', async (req, res) => {
+    if (!req.session.userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    // Using transaction session for atomic rollbacks would ideally be used here, but requires Replica Set in MongoDB.
+    // For single node local dev, we do consecutive updates.
+
+    try {
+        const { recipientEmail, amount } = req.body;
+        if (!recipientEmail || !amount || amount <= 0) return res.status(400).json({ message: 'Invalid recipient or amount' });
+
+        const sender = await User.findById(req.session.userId);
+        if (!sender) return res.status(404).json({ message: 'Sender not found' });
+
+        if (sender.email.toLowerCase() === recipientEmail.toLowerCase()) {
+             return res.status(400).json({ message: 'Cannot transfer to yourself' });
+        }
+
+        if (sender.accountBalance < amount) {
+             return res.status(400).json({ message: 'Insufficient balance' });
+        }
+
+        const recipient = await User.findOne({ email: recipientEmail.toLowerCase() });
+        if (!recipient) {
+             return res.status(404).json({ message: 'Recipient not found' });
+        }
+
+        // Deduct from sender
+        await User.updateOne({ _id: sender._id }, { $inc: { accountBalance: -amount } });
+        
+        // Add to receiver
+        await User.updateOne({ _id: recipient._id }, { $inc: { accountBalance: amount } });
+
+        // Log sender transaction
+        await Transaction.create({
+            userId: sender._id,
+            type: 'Transfer_Out',
+            amount: amount,
+            reference: 'TRX-' + Date.now() + '-' + Math.round(Math.random() * 1000),
+            status: 'Success',
+            description: `Transfer to ${recipientEmail}`
+        });
+
+        // Log recipient transaction
+        await Transaction.create({
+            userId: recipient._id,
+            type: 'Transfer_In',
+            amount: amount,
+            reference: 'TRX-' + Date.now() + '-' + Math.round(Math.random() * 1000),
+            status: 'Success',
+            description: `Transfer from ${sender.email}`
+        });
+
+        res.json({ message: 'Transfer successful' });
+
+    } catch (error) {
+         console.error('Transfer Error:', error);
+         res.status(500).json({ message: 'Transfer failed due to a server error' });
+    }
+});
+
+// Fetch Transactions
+app.get('/api/wallet/transactions', async (req, res) => {
+    if (!req.session.userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    try {
+        const transactions = await Transaction.find({ userId: req.session.userId }).sort({ createdAt: -1 });
+        res.json(transactions);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch custom transaction history' });
     }
 });
 

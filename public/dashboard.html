@@ -98,6 +98,18 @@
       <!-- View: Dashboard Overview -->
       <div id="view-dashboard" class="dashboard-view active">
         
+        <!-- Verification Banner (Hidden by default) -->
+        <div id="verification-banner" style="display: none; background: #fef2f2; border: 1px solid #fecaca; padding: 16px; border-radius: 8px; margin-bottom: 24px; color: #ef4444; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-exclamation-circle" style="font-size: 1.5rem;"></i>
+                <div>
+                    <strong style="display: block; margin-bottom: 4px;">Account Action Required</strong>
+                    <span id="verification-banner-text" style="font-size: 0.9rem;">Please verify your email and complete your profile.</span>
+                </div>
+            </div>
+            <button class="btn btn-sm" onclick="document.getElementById('nav-profile').click()" style="background: #ef4444; color: white; border: none; padding: 8px 16px;">Complete Profile</button>
+        </div>
+
         <!-- Welcome / Total Balance Hero -->
         <div class="dashboard-hero" style="background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); color: white; padding: 32px; border-radius: 24px; margin-bottom: 32px; position: relative; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
             <div style="position: relative; z-index: 1;">
@@ -111,10 +123,10 @@
                     <span class="currency">₦</span><span class="amount">0.00</span>
                 </h1>
                 <div style="margin-top: 24px; display: flex; gap: 12px;">
-                     <button class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+                     <button id="btn-topup-trigger" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
                         <i class="fas fa-plus"></i> Top Up
                      </button>
-                     <button class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
+                     <button id="btn-transfer-trigger" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
                         <i class="fas fa-paper-plane"></i> Transfer
                      </button>
                 </div>
@@ -229,7 +241,7 @@
                      </div>
                      <div class="profile-identity">
                          <h2 class="profile-name">Loading...</h2>
-                         <span class="profile-badge">Verified Member</span>
+                         <span id="main-verification-badge" class="profile-badge status-pending" style="background: rgba(2ef, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">Unverified Member</span>
                      </div>
                      <button id="upload-btn" class="btn btn-sm" style="display: none; background: var(--success-green); border: none;">Save Photo</button>
                  </div>
@@ -299,6 +311,13 @@
                                  <span>Member Since</span>
                              </div>
                              <span class="detail-value-text profile-date">Loading...</span>
+                         </div>
+                         <div class="profile-detail-item">
+                             <div class="detail-label-flex">
+                                 <div class="detail-icon-box"><i class="fas fa-envelope-open-text"></i></div>
+                                 <span>Email Status</span>
+                             </div>
+                             <span id="email-status-badge" class="status-badge status-pending">Unverified</span>
                          </div>
                          <div class="profile-detail-item">
                              <div class="detail-label-flex">

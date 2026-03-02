@@ -2,6 +2,27 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     
+    // --- Password Visibility Toggle ---
+    const passwordToggles = document.querySelectorAll('.password-toggle');
+    passwordToggles.forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const input = this.previousElementSibling.previousElementSibling; // Gets the input field
+            const icon = this.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                input.classList.add('password-visible');
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                input.classList.remove('password-visible');
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+
     // --- Register Form Handling ---
     const registerForm = document.getElementById('register-form');
     if (registerForm) {
@@ -189,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setupProfileUpload();
         setupProfileSaving();
         setupSettingsLogic();
+        setupWallet();
         
         // Logout handler
         const logoutBtn = document.querySelector('.btn-outline'); // The logout button in sidebar
@@ -314,10 +336,9 @@ function setupApplicationForm() {
                 const user = window.currentUser;
                 const isProfileComplete = user.phone && user.address && user.address !== 'Not Provided';
                 
-                if (!isProfileComplete || !user.isNinVerified) {
-                    e.stopImmediatePropagation(); // Ensure it stops
-                    alert('Action Required: You must complete your profile (Phone & Address) and verify your NIN before applying for a loan.');
-                    // Optionally redirect to profile
+                if (!user.isEmailVerified || !isProfileComplete || !user.isNinVerified) {
+                    e.stopImmediatePropagation();
+                    alert('Action Required: You must verify your email, complete your profile, and receive NIN approval before applying for services.');
                     document.getElementById('nav-profile').click();
                     return false;
                 }
@@ -521,16 +542,69 @@ async function fetchUserData() {
                 }
             }
 
-            // Status Badge
+            // --- STRICT VERIFICATION LOGIC ---
+            const isEmailVerified = user.isEmailVerified;
+            const isNinVerified = user.isNinVerified;
+            const hasPhone = !!user.phone && user.phone.trim() !== '';
+            const hasAddress = !!user.address && user.address.trim() !== '' && user.address !== 'Not Provided';
+            
+            const isFullyVerified = isEmailVerified && isNinVerified && hasPhone && hasAddress;
+
+            // Badges
+            const emailBadge = document.getElementById('email-status-badge');
+            if (emailBadge) {
+                if (isEmailVerified) {
+                    emailBadge.className = 'status-badge status-success';
+                    emailBadge.textContent = 'Verified';
+                } else {
+                    emailBadge.className = 'status-badge status-pending';
+                    emailBadge.textContent = 'Unverified';
+                }
+            }
+
             const ninBadge = document.getElementById('nin-status-badge');
             if (ninBadge) {
-                if (user.isNinVerified) {
+                if (isNinVerified) {
                     ninBadge.className = 'status-badge status-success';
                     ninBadge.textContent = 'Verified';
                 } else {
                     ninBadge.className = 'status-badge status-pending';
                     ninBadge.textContent = 'Unverified';
                 }
+            }
+            
+            // Main Profile Badge
+            const mainBadge = document.getElementById('main-verification-badge');
+            if (mainBadge) {
+                if (isFullyVerified) {
+                    mainBadge.className = 'profile-badge';
+                    mainBadge.style.background = 'rgba(16, 185, 129, 0.1)';
+                    mainBadge.style.color = 'var(--success-green)';
+                    mainBadge.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                    mainBadge.innerHTML = '<i class="fas fa-check-circle"></i> VERIFIED MEMBER';
+                } else {
+                    mainBadge.className = 'profile-badge';
+                    mainBadge.style.background = 'rgba(239, 68, 68, 0.1)';
+                    mainBadge.style.color = '#ef4444';
+                    mainBadge.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+                    mainBadge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> UNVERIFIED';
+                }
+            }
+
+            // Dashboard Banner Logic
+            const banner = document.getElementById('verification-banner');
+            const bannerText = document.getElementById('verification-banner-text');
+            
+            if (banner && !isFullyVerified) {
+                banner.style.display = 'flex';
+                let missingSteps = [];
+                if (!isEmailVerified) missingSteps.push('verify your email address');
+                if (!hasPhone || !hasAddress) missingSteps.push('complete your personal details');
+                if (!isNinVerified) missingSteps.push('submit your NIN for approval');
+                
+                bannerText.textContent = `Please ${missingSteps.join(', and ')} to unlock all features.`;
+            } else if (banner) {
+                banner.style.display = 'none';
             }
 
             document.querySelectorAll('.profile-date').forEach(el => el.textContent = new Date(user.createdAt).toLocaleDateString());
@@ -597,35 +671,36 @@ async function fetchUserData() {
         // --- NEW: Populate Transaction Table ---
         const txnList = document.getElementById('transaction-list');
         if (txnList) {
-            const txns = user.transactions || [];
-
-            let html = '';
-            if (txns.length === 0) {
-                html = `
-                <tr>
-                    <td colspan="5" style="text-align: center; color: #6b7280; padding: 20px;">
-                        No recent transactions found.
-                    </td>
-                </tr>
-                `;
-            } else {
-                txns.forEach(t => {
-                    const color = t.amount > 0 ? '#10b981' : '#ef4444';
-                    const sign = t.amount > 0 ? '+' : '';
-                    const badgeClass = t.status === 'Success' ? 'status-success' : (t.status === 'Pending' ? 'status-pending' : 'status-failed');
-                    
-                    html += `
-                    <tr>
-                        <td><span style="font-weight:600;">${t.type}</span></td>
-                        <td>${t.desc}</td>
-                        <td>${new Date(t.date).toLocaleDateString()}</td>
-                        <td style="color: ${color}; font-weight: 600;">${sign}₦${Math.abs(t.amount).toLocaleString()}</td>
-                        <td><span class="status-badge ${badgeClass}">${t.status}</span></td>
-                    </tr>
-                    `;
-                });
+            try {
+                const res = await fetch('/api/wallet/transactions');
+                if (res.ok) {
+                    const txns = await res.json();
+                    let html = '';
+                    if (txns.length === 0) {
+                        html = `<tr><td colspan="5" style="text-align: center; color: #6b7280; padding: 20px;">No recent transactions found.</td></tr>`;
+                    } else {
+                        txns.forEach(t => {
+                            const isCredit = t.type === 'Funding' || t.type === 'Transfer_In';
+                            const color = isCredit ? '#10b981' : '#ef4444';
+                            const sign = isCredit ? '+' : '-';
+                            const badgeClass = t.status === 'Success' ? 'status-success' : (t.status === 'Pending' ? 'status-pending' : 'status-failed');
+                            
+                            html += `
+                            <tr>
+                                <td><span style="font-weight:600;">${t.type.replace('_', ' ')}</span></td>
+                                <td>${t.description || t.reference}</td>
+                                <td>${new Date(t.createdAt).toLocaleDateString()}</td>
+                                <td style="color: ${color}; font-weight: 600;">${sign}₦${Math.abs(t.amount).toLocaleString()}</td>
+                                <td><span class="status-badge ${badgeClass}">${t.status}</span></td>
+                            </tr>
+                            `;
+                        });
+                    }
+                    txnList.innerHTML = html;
+                }
+            } catch(e) {
+                txnList.innerHTML = `<tr><td colspan="5" style="text-align:center;">Failed to load transactions.</td></tr>`;
             }
-            txnList.innerHTML = html;
         }
 
         // Pre-fill application form
@@ -821,4 +896,132 @@ function updateInvestmentsView(user) {
             }
         });
     }
+
+// --- NEW: Wallet Logic ---
+function setupWallet() {
+    // 1. Modals Control
+    const topupTrigger = document.getElementById('btn-topup-trigger');
+    const transferTrigger = document.getElementById('btn-transfer-trigger');
+    const originalTextTopup = topupTrigger ? topupTrigger.innerHTML : '';
+    const originalTextTransfer = transferTrigger ? transferTrigger.innerHTML : '';
+
+    if (topupTrigger) {
+        topupTrigger.addEventListener('click', () => {
+             document.getElementById('modal-topup').style.display = 'flex';
+        });
+    }
+
+    if (transferTrigger) {
+        transferTrigger.addEventListener('click', () => {
+             document.getElementById('modal-transfer').style.display = 'flex';
+        });
+    }
+
+    // 2. Handle Top Up Form (Paystack Initialize)
+    const formTopup = document.getElementById('form-topup');
+    if (formTopup) {
+        formTopup.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-topup');
+            const originalText = btn.textContent;
+            btn.textContent = 'Processing...';
+            btn.disabled = true;
+
+            const amount = document.getElementById('topup-amount').value;
+
+            try {
+                const res = await fetch('/api/wallet/initialize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount: Number(amount) })
+                });
+                const data = await res.json();
+
+                if (res.ok && data.url) {
+                    window.location.href = data.url; // Redirect to Paystack
+                } else {
+                    alert('Funding Failed: ' + (data.message || 'Payment Gateway error'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+    }
+
+    // 3. Handle Initial Redirect Verify (If coming back from Paystack)
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    const reference = urlParams.get('reference') || urlParams.get('trxref');
+    
+    if (paymentStatus === 'success' || reference) {
+         // Auto Verify
+         if (topupTrigger) {
+             topupTrigger.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+         }
+         
+         fetch('/api/wallet/verify', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({ reference })
+         })
+         .then(res => res.json())
+         .then(data => {
+             if (data.isSuccess) {
+                 alert('Payment Verified! Your wallet has been credited.');
+                 // Strip params
+                 window.history.replaceState({}, document.title, window.location.pathname);
+                 fetchUserData(); // Reload balances
+             } else {
+                 alert('Payment Verification Failed: ' + data.message);
+             }
+         })
+         .catch(err => console.error('Verify error:', err))
+         .finally(() => {
+             if (topupTrigger) topupTrigger.innerHTML = originalTextTopup;
+         });
+    }
+
+    // 4. Handle Transfer Form
+    const formTransfer = document.getElementById('form-transfer');
+    if (formTransfer) {
+        formTransfer.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit-transfer');
+            const originalText = btn.textContent;
+            btn.textContent = 'Processing...';
+            btn.disabled = true;
+
+            const recipientEmail = document.getElementById('transfer-email').value;
+            const amount = document.getElementById('transfer-amount').value;
+
+            try {
+                const res = await fetch('/api/wallet/transfer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ recipientEmail, amount: Number(amount) })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    alert('Transfer Successful!');
+                    document.getElementById('modal-transfer').style.display = 'none';
+                    formTransfer.reset();
+                    fetchUserData(); // Reload balances and history
+                } else {
+                    alert('Transfer Failed: ' + data.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+    }
+}
 // End of script
