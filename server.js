@@ -153,20 +153,14 @@ app.post('/api/register', async (req, res) => {
     await user.save();
     console.log('User saved successfully');
     
-    // Log user in immediately
-    req.session.userId = user._id;
-
-    // Send Verification Email (Async - don't block response)
+    // Send Verification Email and Welcome Email (Async - don't block response)
     const host = req.headers.host;
-    sendVerificationEmail(user.email, user.fullName, verificationToken, host).catch(err => console.error('Email failed asynchronously', err));
+    sendVerificationEmail(user.email, user.fullName, verificationToken, host).catch(err => console.error('Verification Email failed asynchronously', err));
+    sendWelcomeEmail(user.email, user.fullName).catch(err => console.error('Welcome Email failed asynchronously', err));
 
-    // Explicitly save session before response
-    req.session.save((err) => {
-        if (err) {
-            console.error('Session Save Error:', err);
-            return res.status(500).json({ message: 'Error establishing session' });
-        }
-        res.status(201).json({ message: 'User registered successfully', user: { fullName: user.fullName, email: user.email } });
+    res.status(201).json({ 
+        message: 'Registration successful! Please check your email to verify your account before logging in.', 
+        user: { fullName: user.fullName, email: user.email } 
     });
 
   } catch (error) {
@@ -239,6 +233,11 @@ app.post('/api/login', async (req, res) => {
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
         return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // Verify Email Status
+    if (!user.isEmailVerified) {
+        return res.status(403).json({ message: 'Please verify your email address before logging in. Check your inbox.' });
     }
 
     // Update Last Login

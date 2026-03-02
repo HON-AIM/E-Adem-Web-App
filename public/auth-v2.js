@@ -49,8 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('Registration successful! Redirecting to dashboard...');
-                    window.location.href = 'dashboard.html';
+                    alert(data.message || 'Registration successful! Please check your email to verify your account.');
+                    window.location.href = 'login.html';
                 } else {
                     alert(data.message || 'Registration failed');
                     submitBtn.textContent = originalBtnText;
