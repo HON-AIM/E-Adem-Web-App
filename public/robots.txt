@@ -1,0 +1,24 @@
+# E-Adem Global Website - robots.txt
+# https://eademglobal.com
+
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+Disallow: /*.json$
+Disallow: /dashboard.html
+
+# Disallow query strings for better SEO (optional - uncomment if needed)
+# Disallow: /*?
+
+# Sitemap location
+Sitemap: https://eademglobal.com/sitemap.xml
+
+# Crawl-delay (optional - be nice to smaller sites)
+Crawl-delay: 10
+
+# Host directive
+Host: https://eademglobal.com
