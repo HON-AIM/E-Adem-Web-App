@@ -1141,7 +1141,6 @@ app.get('/api/admin/audit-logs', isAdmin, async (req, res) => {
         res.status(500).json({ message: 'Error fetching audit logs' });
     }
 });
-});
 
 // --- WALLET / PAYMENT ROUTES ---
 
