@@ -100,17 +100,6 @@ const sendWelcomeEmail = async (userEmail, userName) => {
   }
 };
 
-  try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Welcome email sent: %s', info.messageId);
-    return info;
-  } catch (error) {
-    console.error('Error sending welcome email:', error);
-    // Determine if we should throw or just log. Since email is non-critical for signup flow completion, we log.
-    return null;
-  }
-};
-
 // Function to send email verification link
 const sendVerificationEmail = async (userEmail, userName, verificationToken, host) => {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
