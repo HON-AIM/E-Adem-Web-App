@@ -161,7 +161,7 @@ app.post('/api/register', async (req, res) => {
     // Create new user
     user = new User({
       fullName,
-      email,
+      email: email.toLowerCase(),
       password,
       phone,
       emailVerificationToken: verificationToken,
@@ -183,11 +183,11 @@ app.post('/api/register', async (req, res) => {
     });
 
   } catch (error) {
-    const msg = 'Server error during registration ' + timestamp;
+    const msg = 'Server error during registration';
     console.error('CRITICAL REGISTER ERROR:', error);
     if (error.stack) console.error(error.stack);
     logToFile(msg + ' ' + error.stack);
-    res.status(500).json({ message: msg, error: error.message });
+    res.status(500).json({ message: msg + ': ' + error.message });
   }
 });
 
@@ -1372,6 +1372,13 @@ app.post('/api/webhook/paystack', express.raw({ type: 'application/json' }), asy
         console.error('Webhook Error:', error);
         res.status(500).json({ message: 'Webhook processing error' });
     }
+});
+
+// Global Error Handler for API routes
+app.use('/api/', (err, req, res, next) => {
+    console.error('API Error:', err);
+    logToFile('API Error: ' + err.message);
+    res.status(500).json({ message: 'Server error occurred' });
 });
 
 // Serve frontend for all other routes
