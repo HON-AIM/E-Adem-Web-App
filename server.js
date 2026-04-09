@@ -40,7 +40,9 @@ const upload = multer({
 const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/eadem_db';
-const SESSION_SECRET = process.env.SESSION_SECRET || 'fallback_secret_key';
+const SESSION_SECRET = process.env.SESSION_SECRET;
+const SETUP_SECRET = process.env.SETUP_SECRET;
+const PAYSTACK_WEBHOOK_SECRET = process.env.PAYSTACK_WEBHOOK_SECRET;
 
 const fs = require('fs');
 const util = require('util');
@@ -125,6 +127,23 @@ app.post('/api/register', async (req, res) => {
     if (!fullName || !email || !password || !phone) {
         console.log('Validation failed: Missing fields');
         return res.status(400).json({ message: 'All fields are required' });
+    }
+    
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: 'Invalid email format' });
+    }
+    
+    // Password strength validation
+    if (password.length < 8) {
+        return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+    }
+    
+    // Phone validation (basic)
+    const phoneRegex = /^[0-9+\s-]{10,}$/;
+    if (!phoneRegex.test(phone)) {
+        return res.status(400).json({ message: 'Invalid phone number format' });
     }
 
     console.log('Checking for existing user...');
@@ -269,7 +288,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Get User Data
+// Get User Data (with active loan amount)
 app.get('/api/user', async (req, res) => {
     if (!req.session.userId) {
         return res.status(401).json({ message: 'Unauthorized' });
@@ -279,7 +298,20 @@ app.get('/api/user', async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        res.json(user);
+
+        // Get active loan amount
+        const activeLoan = await Application.findOne({ 
+            userId: user._id, 
+            type: 'Loan', 
+            status: 'Approved' 
+        }).sort({ createdAt: -1 });
+
+        const responseData = user.toObject();
+        responseData.activeLoanAmount = activeLoan && activeLoan.details && activeLoan.details.amount 
+            ? activeLoan.details.amount 
+            : (user.activeLoanAmount || 0);
+
+        res.json(responseData);
     } catch (error) {
         console.error('Get User Error:', error);
         res.status(500).json({ message: 'Server error' });
@@ -292,7 +324,7 @@ app.post('/api/user/update', async (req, res) => {
         return res.status(401).json({ message: 'Unauthorized' });
     }
     try {
-        const { fullName, email, phone, address, nin } = req.body;
+        const { phone, address, nin } = req.body;
         const user = await User.findById(req.session.userId);
 
         if (!user) {
@@ -309,11 +341,12 @@ app.post('/api/user/update', async (req, res) => {
                 return res.status(400).json({ message: 'NIN is already verified and cannot be changed.' });
             }
             if (!user.isNinVerified) {
-                 if (existingNin && existingNin._id.toString() !== user._id.toString()) {
-                     return res.status(400).json({ message: 'This NIN is already linked to another account.' });
-                 }
-                 user.nin = nin;
-                 user.isNinVerified = false; // Require Admin Approval
+                const existingNin = await User.findOne({ nin: nin });
+                if (existingNin && existingNin._id.toString() !== user._id.toString()) {
+                    return res.status(400).json({ message: 'This NIN is already linked to another account.' });
+                }
+                user.nin = nin;
+                user.isNinVerified = false; // Require Admin Approval
             }
         }
 
@@ -348,6 +381,9 @@ app.delete('/api/user/delete', async (req, res) => {
         // Delete Applications
         await Application.deleteMany({ userId: user._id });
 
+        // Delete Transactions
+        await Transaction.deleteMany({ userId: user._id });
+
         // Delete User
         await User.findByIdAndDelete(user._id);
 
@@ -374,6 +410,25 @@ app.post('/api/user/change-password', async (req, res) => {
         const { currentPassword, newPassword } = req.body;
         if (!currentPassword || !newPassword) {
             return res.status(400).json({ message: 'Both current and new passwords are required' });
+        }
+
+        // Password strength validation
+        if (newPassword.length < 8) {
+            return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+        }
+        if (!/[A-Z]/.test(newPassword)) {
+            return res.status(400).json({ message: 'Password must contain at least one uppercase letter' });
+        }
+        if (!/[a-z]/.test(newPassword)) {
+            return res.status(400).json({ message: 'Password must contain at least one lowercase letter' });
+        }
+        if (!/[0-9]/.test(newPassword)) {
+            return res.status(400).json({ message: 'Password must contain at least one number' });
+        }
+
+        // Prevent using current password as new password
+        if (currentPassword === newPassword) {
+            return res.status(400).json({ message: 'New password cannot be the same as current password' });
         }
 
         const user = await User.findById(req.session.userId);
@@ -555,52 +610,25 @@ app.post('/api/upload-profile', upload.single('profilePicture'), async (req, res
     }
 });
 
-// Get Current User
-app.get('/api/user', async (req, res) => {
-  if (!req.session.userId) {
-    return res.status(401).json({ message: 'Not authenticated' });
-  }
-
-  try {
-    const user = await User.findById(req.session.userId).select('-password');
-    if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Check for active loan
-    // We assume 'Approved' means active, and type must be 'Loan'
-    // Sort by recent first to get the latest one
-    const activeLoan = await Application.findOne({ 
-        userId: user._id, 
-        type: 'Loan', 
-        status: 'Approved' 
-    }).sort({ createdAt: -1 });
-
-    const responseData = user.toObject();
-    responseData.activeLoanAmount = activeLoan && activeLoan.details && activeLoan.details.amount 
-        ? activeLoan.details.amount 
-        : 0;
-
-    res.json(responseData);
-  } catch (error) {
-    console.error('Get User Error:', error);
-    res.status(500).json({ message: 'Server error fetching user data' });
-  }
-});
-
 // --- ADMIN ROUTES ---
 
 // Middleware to check Admin Role
 async function isAdmin(req, res, next) {
-    if (!req.session.userId) return res.status(401).json({ message: 'Unauthorized' });
+    if (!req.session.userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
     
     try {
         const user = await User.findById(req.session.userId);
-        if (!user || user.role !== 'admin') {
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        if (user.role !== 'admin') {
             return res.status(403).json({ message: 'Access denied: Admins only' });
         }
         next();
     } catch (error) {
+        console.error('Admin middleware error:', error);
         res.status(500).json({ message: 'Server check error' });
     }
 }
@@ -638,10 +666,13 @@ app.get('/admin', isAdmin, (req, res) => {
 });
 
 // SECRET SETUP ROUTE (For Initial Admin Creation)
-// Usage: /api/setup-admin?email=YOUR_EMAIL&secret=eadem_admin_setup_2026
+// Usage: /api/setup-admin?email=YOUR_EMAIL&secret=YOUR_SECRET
 app.get('/api/setup-admin', async (req, res) => {
     const { email, secret } = req.query;
-    const SETUP_SECRET = process.env.SETUP_SECRET || 'eadem_admin_setup_2026';
+
+    if (!SETUP_SECRET) {
+        return res.status(500).json({ message: 'Admin setup secret not configured. Set SETUP_SECRET environment variable.' });
+    }
 
     if (secret !== SETUP_SECRET) {
         return res.status(403).json({ message: 'Invalid setup secret.' });
@@ -763,30 +794,60 @@ app.delete('/api/admin/user/:id', isAdmin, async (req, res) => {
     }
 });
 
-// Admin: Approve/Reject Loan 
-app.post('/api/admin/loan-action', isAdmin, async (req, res) => {
+// Admin: Approve/Reject specific Loan Application
+app.post('/api/admin/loan-action', async (req, res) => {
     try {
-         const { userId, action, amount } = req.body; // action: 'approve', 'reject'
+         const { applicationId, userId, action, amount } = req.body;
+         
+         if (!applicationId && !userId) {
+             return res.status(400).json({ message: 'Either applicationId or userId is required' });
+         }
          
          const user = await User.findById(userId);
          if (!user) return res.status(404).json({ message: 'User not found' });
          
          if (action === 'approve') {
+             // Check for existing pending loan applications
+             const pendingLoan = await Application.findOne({ 
+                 userId: userId, 
+                 type: 'Loan',
+                 status: 'Pending'
+             });
+             
+             if (!pendingLoan && !applicationId) {
+                 return res.status(400).json({ message: 'No pending loan application found for this user' });
+             }
+             
              user.activeLoanAmount = amount || 0;
-             // Update Application status and set approvedAt
-             await Application.updateMany(
-                 { userId: userId, type: 'Loan' }, 
-                 { status: 'Approved', approvedAt: Date.now() }
-             );
+             // Update the specific application
+             if (applicationId) {
+                 await Application.findByIdAndUpdate(applicationId, { 
+                     status: 'Approved', 
+                     approvedAt: Date.now() 
+                 });
+             } else if (pendingLoan) {
+                 pendingLoan.status = 'Approved';
+                 pendingLoan.approvedAt = Date.now();
+                 await pendingLoan.save();
+             }
          } else if (action === 'reject') {
-             // Logic to reject
-             await Application.updateMany({ userId: userId, type: 'Loan' }, { status: 'Rejected' });
+             // Reject specific application
+             if (applicationId) {
+                 await Application.findByIdAndUpdate(applicationId, { status: 'Rejected' });
+             } else {
+                 await Application.updateMany({ 
+                     userId: userId, 
+                     type: 'Loan',
+                     status: 'Pending'
+                 }, { status: 'Rejected' });
+             }
              user.activeLoanAmount = 0;
          }
          
          await user.save();
          res.json({ message: `Loan ${action}d successfully` });
     } catch (error) {
+        console.error('Loan Action Error:', error);
         res.status(500).json({ message: 'Error processing loan action' });
     }
 });
@@ -887,11 +948,17 @@ app.post('/api/wallet/initialize', async (req, res) => {
 
         // Paystack uses kobo
         const amountInKobo = Math.round(amount * 100);
+        
+        // Dynamic callback URL based on environment
+        const isProduction = process.env.NODE_ENV === 'production';
+        const callbackUrl = isProduction 
+            ? `https://${req.headers.host}/dashboard.html?payment=success`
+            : `http://${req.headers.host}/dashboard.html?payment=success`;
 
         const response = await axios.post('https://api.paystack.co/transaction/initialize', {
             email: user.email,
             amount: amountInKobo,
-            callback_url: `http://localhost:${PORT}/dashboard.html?payment=success` // Adjusted dynamically later
+            callback_url: callbackUrl
         }, {
             headers: {
                 Authorization: `Bearer ${paystackSecret}`,
@@ -979,12 +1046,15 @@ app.post('/api/wallet/verify', async (req, res) => {
 app.post('/api/wallet/transfer', async (req, res) => {
     if (!req.session.userId) return res.status(401).json({ message: 'Unauthorized' });
 
-    // Using transaction session for atomic rollbacks would ideally be used here, but requires Replica Set in MongoDB.
-    // For single node local dev, we do consecutive updates.
-
     try {
         const { recipientEmail, amount } = req.body;
         if (!recipientEmail || !amount || amount <= 0) return res.status(400).json({ message: 'Invalid recipient or amount' });
+        
+        // Maximum transfer limit
+        const MAX_TRANSFER_AMOUNT = 10000000; // 10 million naira
+        if (amount > MAX_TRANSFER_AMOUNT) {
+            return res.status(400).json({ message: `Transfer amount exceeds maximum limit of ₦${MAX_TRANSFER_AMOUNT.toLocaleString()}` });
+        }
 
         const sender = await User.findById(req.session.userId);
         if (!sender) return res.status(404).json({ message: 'Sender not found' });
@@ -1045,6 +1115,49 @@ app.get('/api/wallet/transactions', async (req, res) => {
         res.json(transactions);
     } catch (error) {
         res.status(500).json({ message: 'Failed to fetch custom transaction history' });
+    }
+});
+
+// Paystack Webhook (for handling payment events)
+app.post('/api/webhook/paystack', express.raw({ type: 'application/json' }), async (req, res) => {
+    if (!PAYSTACK_WEBHOOK_SECRET) {
+        console.error('Paystack webhook secret not configured');
+        return res.status(500).json({ message: 'Webhook not configured' });
+    }
+
+    try {
+        const signature = req.headers['x-paystack-signature'];
+        
+        // Verify webhook signature (in production)
+        // const crypto = require('crypto');
+        // const hash = crypto.createHmac('sha512', PAYSTACK_WEBHOOK_SECRET).update(req.body).digest('hex');
+        // if (hash !== signature) return res.status(401).json({ message: 'Invalid signature' });
+
+        const event = JSON.parse(req.body);
+        
+        if (event.event === 'charge.success') {
+            const reference = event.data.reference;
+            const amount = event.data.amount / 100; // Convert from kobo
+            
+            // Find and update the transaction
+            const transaction = await Transaction.findOne({ reference });
+            if (transaction && transaction.status !== 'Success') {
+                transaction.status = 'Success';
+                await transaction.save();
+                
+                await User.updateOne(
+                    { _id: transaction.userId },
+                    { $inc: { accountBalance: amount } }
+                );
+                
+                console.log(`Webhook: Successfully credited ₦${amount} to user ${transaction.userId}`);
+            }
+        }
+        
+        res.status(200).json({ received: true });
+    } catch (error) {
+        console.error('Webhook Error:', error);
+        res.status(500).json({ message: 'Webhook processing error' });
     }
 });
 

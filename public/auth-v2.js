@@ -2,6 +2,73 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     
+    // --- Toast Notification System ---
+    function showToast(message, type = 'info') {
+        const existingToast = document.querySelector('.toast-container');
+        if (existingToast) existingToast.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = 'toast-container';
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        `;
+        
+        const colors = {
+            success: { bg: '#10b981', icon: '✓' },
+            error: { bg: '#ef4444', icon: '✕' },
+            info: { bg: '#3b82f6', icon: 'ℹ' },
+            warning: { bg: '#f59e0b', icon: '⚠' }
+        };
+        
+        const color = colors[type] || colors.info;
+        toast.innerHTML = `
+            <div style="
+                background: ${color.bg};
+                color: white;
+                padding: 14px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 0.95rem;
+                animation: slideIn 0.3s ease;
+                max-width: 350px;
+            ">
+                <span style="font-weight: bold; font-size: 1.1rem;">${color.icon}</span>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.firstElementChild.style.animation = 'slideOut 0.3s ease forwards';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+    
+    // Make showToast globally available
+    window.showToast = showToast;
+    
     // --- Password Visibility Toggle ---
     const passwordToggles = document.querySelectorAll('.password-toggle');
     passwordToggles.forEach(toggle => {
@@ -49,17 +116,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert(data.message || 'Registration successful! Please check your email to verify your account.');
+                    showToast(data.message || 'Registration successful! Please check your email to verify your account.', 'success');
                     window.location.href = 'login.html';
                 } else {
-                    alert(data.message || 'Registration failed');
+                    showToast(data.message || 'Registration failed', 'error');
                     submitBtn.textContent = originalBtnText;
                     submitBtn.disabled = false;
                 }
             } catch (error) {
                 console.error('Error:', error);
-                // Alert the specific error to help debugging
-                alert('Connection Error: ' + error.message + '\n\nPlease ensure you are accessing via http://localhost:3000');
+                showToast('Connection Error: ' + error.message, 'error');
                 submitBtn.textContent = originalBtnText;
                 submitBtn.disabled = false;
             }
@@ -98,13 +164,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.location.href = 'dashboard.html';
                     }
                 } else {
-                    alert(data.message || 'Login failed');
+                    showToast(data.message || 'Login failed', 'error');
                     submitBtn.textContent = originalBtnText;
                     submitBtn.disabled = false;
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred. Please try again.');
+                showToast('An error occurred. Please try again.', 'error');
                 submitBtn.textContent = originalBtnText;
                 submitBtn.disabled = false;
             }
@@ -134,14 +200,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert(data.message);
+                    showToast(data.message, 'success');
                     forgotPasswordForm.reset();
                 } else {
-                    alert(data.message || 'Request failed');
+                    showToast(data.message || 'Request failed', 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred. Please try again.');
+                showToast('An error occurred. Please try again.', 'error');
             } finally {
                 submitBtn.textContent = originalBtnText;
                 submitBtn.disabled = false;
@@ -157,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const token = urlParams.get('token');
 
         if (!token) {
-            alert('Invalid or missing reset token.');
+            showToast('Invalid or missing reset token.', 'error');
             window.location.href = 'login.html';
         }
 
@@ -168,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const confirmPassword = document.getElementById('confirm-password').value;
 
             if (newPassword !== confirmPassword) {
-                alert('Passwords do not match');
+                showToast('Passwords do not match', 'warning');
                 return;
             }
 
@@ -187,14 +253,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert(data.message);
+                    showToast(data.message, 'success');
                     window.location.href = 'login.html';
                 } else {
-                    alert(data.message || 'Reset failed');
+                    showToast(data.message || 'Reset failed', 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred. Please try again.');
+                showToast('An error occurred. Please try again.', 'error');
             } finally {
                 submitBtn.textContent = originalBtnText;
                 submitBtn.disabled = false;
@@ -338,7 +404,7 @@ function setupApplicationForm() {
                 
                 if (!user.isEmailVerified || !isProfileComplete || !user.isNinVerified) {
                     e.stopImmediatePropagation();
-                    alert('Action Required: You must verify your email, complete your profile, and receive NIN approval before applying for services.');
+                    showToast('Action Required: You must verify your email, complete your profile, and receive NIN approval before applying for services.', 'warning');
                     document.getElementById('nav-profile').click();
                     return false;
                 }
@@ -397,16 +463,16 @@ function setupApplicationForm() {
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert('Application Submitted Successfully!');
+                    showToast('Application Submitted Successfully!', 'success');
                     // Reset form and return to dashboard
                     form.reset();
                     document.getElementById('nav-dashboard').click(); 
                 } else {
-                    alert(`Error: ${result.message}`);
+                    showToast(`Error: ${result.message}`, 'error');
                 }
             } catch (err) {
                 console.error('Submission error:', err);
-                alert('An error occurred. Please try again.');
+                showToast('An error occurred. Please try again.', 'error');
             } finally {
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
@@ -455,34 +521,32 @@ function setupProfileUpload() {
             const result = await response.json();
 
             if (response.ok) {
-                alert('Profile picture updated successfully!');
+                showToast('Profile picture updated successfully!', 'success');
                 uploadBtn.style.display = 'none';
                 uploadBtn.textContent = 'Save Photo';
                 uploadBtn.disabled = false;
                 // Reload user data to confirm
                 fetchUserData();
             } else {
-                alert('Upload failed: ' + result.message);
+                showToast('Upload failed: ' + result.message, 'error');
             }
         } catch (error) {
             console.error('Upload error:', error);
-            alert('Error uploading file');
+            showToast('Error uploading file', 'error');
             uploadBtn.textContent = 'Save Photo';
             uploadBtn.disabled = false;
         }
     });
 }
 
-// --- NEW: Copy Function ---
-
-
-// --- NEW: Copy Function ---
+// --- Copy Account Number Function ---
 function copyAccountNum() {
     const num = document.getElementById('account-number').textContent;
     navigator.clipboard.writeText(num).then(() => {
-        alert('Account Number Copied: ' + num);
+        showToast('Account Number Copied: ' + num, 'success');
     }).catch(err => {
         console.error('Failed to copy: ', err);
+        showToast('Failed to copy account number', 'error');
     });
 }
 
@@ -629,7 +693,7 @@ async function fetchUserData() {
              }
         }
 
-        // --- NEW: Update Total Balance (Mock for now or from DB if available) ---
+        // --- Update Total Balance ---
         const totalBalanceContainer = document.querySelector('.dashboard-hero h1');
         const amountSpan = totalBalanceContainer ? totalBalanceContainer.querySelector('.amount') : null;
         
@@ -638,25 +702,34 @@ async function fetchUserData() {
              
              // Store actual value in data attribute
              amountSpan.dataset.value = Number(bal).toLocaleString(undefined, {minimumFractionDigits: 2});
-             amountSpan.textContent = amountSpan.dataset.value;
+             
+             // Check saved preference for balance visibility
+             const balanceVisible = localStorage.getItem('balanceVisible') !== 'false';
+             amountSpan.textContent = balanceVisible ? amountSpan.dataset.value : '••••••';
              
              // Setup Toggle
              const toggleBtn = document.getElementById('toggle-balance-btn');
              if (toggleBtn) {
-                 // Clone to remove old listeners if any (simple way for re-runs)
+                 // Clone to remove old listeners if any
                  const newBtn = toggleBtn.cloneNode(true);
                  toggleBtn.parentNode.replaceChild(newBtn, toggleBtn);
                  
+                 // Set initial icon state
+                 const icon = newBtn.querySelector('i');
+                 icon.className = balanceVisible ? 'fas fa-eye' : 'fas fa-eye-slash';
+                 
                  newBtn.addEventListener('click', () => {
-                     const isHidden = amountSpan.textContent.includes('****');
+                     const isHidden = amountSpan.textContent.includes('••');
                      const icon = newBtn.querySelector('i');
                      
                      if (isHidden) {
                          amountSpan.textContent = amountSpan.dataset.value;
                          icon.className = 'fas fa-eye';
+                         localStorage.setItem('balanceVisible', 'true');
                      } else {
-                         amountSpan.textContent = '****';
+                         amountSpan.textContent = '••••••';
                          icon.className = 'fas fa-eye-slash';
+                         localStorage.setItem('balanceVisible', 'false');
                      }
                  });
              }
@@ -668,7 +741,7 @@ async function fetchUserData() {
             accNumDisplay.textContent = user.accountNumber || 'Generating...';
         }
 
-        // --- NEW: Populate Transaction Table ---
+        // --- Populate Transaction Table ---
         const txnList = document.getElementById('transaction-list');
         if (txnList) {
             try {
@@ -677,7 +750,18 @@ async function fetchUserData() {
                     const txns = await res.json();
                     let html = '';
                     if (txns.length === 0) {
-                        html = `<tr><td colspan="5" style="text-align: center; color: #6b7280; padding: 20px;">No recent transactions found.</td></tr>`;
+                        html = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px;">
+                                <div style="color: var(--text-secondary);">
+                                    <div style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;">
+                                        <i class="fas fa-receipt"></i>
+                                    </div>
+                                    <p style="font-size: 1rem; margin-bottom: 5px;">No transactions yet</p>
+                                    <p style="font-size: 0.85rem; opacity: 0.7;">Your transaction history will appear here</p>
+                                </div>
+                            </td>
+                        </tr>`;
                     } else {
                         txns.forEach(t => {
                             const isCredit = t.type === 'Funding' || t.type === 'Transfer_In';
@@ -699,7 +783,16 @@ async function fetchUserData() {
                     txnList.innerHTML = html;
                 }
             } catch(e) {
-                txnList.innerHTML = `<tr><td colspan="5" style="text-align:center;">Failed to load transactions.</td></tr>`;
+                txnList.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 40px;">
+                        <div style="color: #ef4444;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                            <p>Failed to load transactions</p>
+                            <button onclick="fetchUserData()" class="btn" style="margin-top: 10px; padding: 8px 16px; font-size: 0.85rem;">Retry</button>
+                        </div>
+                    </td>
+                </tr>`;
             }
         }
 
@@ -742,15 +835,15 @@ function setupProfileSaving() {
             const data = await response.json();
 
             if (response.ok) {
-                alert('Profile updated successfully!');
+                showToast('Profile updated successfully!', 'success');
                 // Refresh data to update UI (lock NIN if newly verified)
                 fetchUserData(); 
             } else {
-                alert(data.message || 'Update failed');
+                showToast(data.message || 'Update failed', 'error');
             }
         } catch (error) {
             console.error('Update Error:', error);
-            alert('Failed to update profile. Please try again.');
+            showToast('Failed to update profile. Please try again.', 'error');
         } finally {
             saveBtn.innerHTML = originalText;
             saveBtn.disabled = false;
@@ -791,7 +884,8 @@ function updateInvestmentsView(user) {
     console.log('Updating investments for', user.fullName);
 }
 
-// --- NEW: Settings Logic ---
+// --- Settings Logic ---
+function setupSettingsLogic() {
     // 1. Password Update
     const passwordForm = document.getElementById('settings-password-form');
     if (passwordForm) {
@@ -803,8 +897,15 @@ function updateInvestmentsView(user) {
             btn.textContent = 'Updating...';
             btn.disabled = true;
 
-            const currentPassword = document.getElementById('current-password').value;
-            const newPassword = document.getElementById('new-password').value;
+            const currentPassword = document.getElementById('current-password')?.value;
+            const newPassword = document.getElementById('new-password')?.value;
+
+            if (!currentPassword || !newPassword) {
+                showToast('Please fill in both password fields', 'error');
+                btn.textContent = originalText;
+                btn.disabled = false;
+                return;
+            }
 
             try {
                 const response = await fetch('/api/user/change-password', {
@@ -816,14 +917,14 @@ function updateInvestmentsView(user) {
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('Password updated successfully!');
+                    showToast('Password updated successfully!', 'success');
                     passwordForm.reset();
                 } else {
-                    alert(data.message || 'Update failed');
+                    showToast(data.message || 'Update failed', 'error');
                 }
             } catch (error) {
                 console.error('Update Error:', error);
-                alert('An error occurred. Please try again.');
+                showToast('An error occurred. Please try again.', 'error');
             } finally {
                 btn.textContent = originalText;
                 btn.disabled = false;
@@ -844,16 +945,15 @@ function updateInvestmentsView(user) {
         toggle.addEventListener('change', () => {
             localStorage.setItem(`setting_toggle_${index}`, toggle.checked);
             
-            // Special Handler for Dark Mode (assuming last toggle is theme)
-            // Ideally we should use ID, but user didn't add IDs to all.
-            // Let's use the ID we added: settings-theme-toggle
+            // Special Handler for Dark Mode
             if (toggle.id === 'settings-theme-toggle') {
-                document.body.classList.toggle('dark-mode', toggle.checked);
-                // Also trigger existing theme toggle if available to keep sync
-                const existingThemeBtn = document.querySelector('.theme-toggle');
-                if(existingThemeBtn) {
-                     // Just visual sync or re-trigger logic? 
-                     // Simple class toggle on body should suffice for now as standard dark mode impl.
+                const theme = toggle.checked ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                // Sync topbar theme toggle
+                const themeIcon = document.querySelector('.theme-icon');
+                if (themeIcon) {
+                    themeIcon.textContent = toggle.checked ? '☀️' : '🌙';
                 }
             }
         });
@@ -866,7 +966,7 @@ function updateInvestmentsView(user) {
             const user = window.currentUser;
             
             if (user && user.activeLoanAmount > 0) {
-                alert('ACTION DENIED: You cannot delete your account while you have an outstanding loan balance of ₦' + user.activeLoanAmount.toLocaleString());
+                showToast('ACTION DENIED: You cannot delete your account while you have an outstanding loan balance of ₦' + user.activeLoanAmount.toLocaleString(), 'error');
                 return;
             }
             
@@ -879,23 +979,26 @@ function updateInvestmentsView(user) {
                     .then(res => res.json().then(data => ({ status: res.status, body: data })))
                     .then(({ status, body }) => {
                         if (status === 200) {
-                            alert(body.message);
-                            window.location.href = 'index.html';
+                            showToast(body.message, 'success');
+                            setTimeout(() => {
+                                window.location.href = 'index.html';
+                            }, 1500);
                         } else {
-                            alert('Deletion Failed: ' + body.message);
+                            showToast('Deletion Failed: ' + body.message, 'error');
                             deleteBtn.textContent = 'Delete Account';
                             deleteBtn.disabled = false;
                         }
                     })
                     .catch(err => {
                         console.error('Delete Error:', err);
-                        alert('An error occurred while deleting account.');
+                        showToast('An error occurred while deleting account.', 'error');
                         deleteBtn.textContent = 'Delete Account';
                         deleteBtn.disabled = false;
                     });
             }
         });
     }
+}
 
 // --- NEW: Wallet Logic ---
 function setupWallet() {
@@ -907,13 +1010,13 @@ function setupWallet() {
 
     if (topupTrigger) {
         topupTrigger.addEventListener('click', () => {
-             document.getElementById('modal-topup').style.display = 'flex';
+             window.showModal ? window.showModal('modal-topup', true) : document.getElementById('modal-topup').style.display = 'flex';
         });
     }
 
     if (transferTrigger) {
         transferTrigger.addEventListener('click', () => {
-             document.getElementById('modal-transfer').style.display = 'flex';
+             window.showModal ? window.showModal('modal-transfer', true) : document.getElementById('modal-transfer').style.display = 'flex';
         });
     }
 
@@ -940,11 +1043,11 @@ function setupWallet() {
                 if (res.ok && data.url) {
                     window.location.href = data.url; // Redirect to Paystack
                 } else {
-                    alert('Funding Failed: ' + (data.message || 'Payment Gateway error'));
+                    showToast('Funding Failed: ' + (data.message || 'Payment Gateway error'), 'error');
                 }
             } catch (err) {
                 console.error(err);
-                alert('Connection error');
+                showToast('Connection error', 'error');
             } finally {
                 btn.textContent = originalText;
                 btn.disabled = false;
@@ -969,16 +1072,16 @@ function setupWallet() {
              body: JSON.stringify({ reference })
          })
          .then(res => res.json())
-         .then(data => {
-             if (data.isSuccess) {
-                 alert('Payment Verified! Your wallet has been credited.');
-                 // Strip params
-                 window.history.replaceState({}, document.title, window.location.pathname);
-                 fetchUserData(); // Reload balances
-             } else {
-                 alert('Payment Verification Failed: ' + data.message);
-             }
-         })
+          .then(data => {
+              if (data.isSuccess) {
+                  showToast('Payment Verified! Your wallet has been credited.', 'success');
+                  // Strip params
+                  window.history.replaceState({}, document.title, window.location.pathname);
+                  fetchUserData(); // Reload balances
+              } else {
+                  showToast('Payment Verification Failed: ' + data.message, 'error');
+              }
+          })
          .catch(err => console.error('Verify error:', err))
          .finally(() => {
              if (topupTrigger) topupTrigger.innerHTML = originalTextTopup;
@@ -1007,16 +1110,16 @@ function setupWallet() {
                 const data = await res.json();
 
                 if (res.ok) {
-                    alert('Transfer Successful!');
-                    document.getElementById('modal-transfer').style.display = 'none';
+                    showToast('Transfer Successful!', 'success');
+                    window.showModal ? window.showModal('modal-transfer', false) : document.getElementById('modal-transfer').style.display = 'none';
                     formTransfer.reset();
                     fetchUserData(); // Reload balances and history
                 } else {
-                    alert('Transfer Failed: ' + data.message);
+                    showToast('Transfer Failed: ' + data.message, 'error');
                 }
             } catch (err) {
                 console.error(err);
-                alert('Connection error');
+                showToast('Connection error', 'error');
             } finally {
                 btn.textContent = originalText;
                 btn.disabled = false;

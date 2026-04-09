@@ -4,220 +4,257 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard | E-Adem Global Company Limited</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f172a',
+                        secondary: '#1e293b',
+                        accent: '#3b82f6',
+                        success: '#10b981',
+                        danger: '#ef4444',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
   </head>
   <body class="dashboard-body">
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
+    <!-- Sidebar - Updated with Tailwind -->
+    <aside class="sidebar fixed left-0 top-0 h-full w-64 bg-primary text-white flex flex-col z-50 transition-transform duration-300 shadow-2xl" id="sidebar">
+      <div class="p-6 border-b border-white/10">
         <a href="index.html">
-          <img src="./images/logo.png" alt="E-Adem" class="sidebar-logo" />
+          <img src="./images/logo.png" alt="E-Adem" class="h-8 w-auto brightness-0 invert">
         </a>
       </div>
 
-      <div class="user-profile-mini">
+      <div class="p-4 mx-4 my-4 bg-white/5 rounded-xl border border-white/10 flex items-center gap-3">
         <img
           src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
           alt="User"
-          class="user-avatar-small"
+          class="w-10 h-10 rounded-full object-cover border-2 border-accent"
         />
         <div class="user-info-mini">
-          <h4>John Doe</h4>
-          <p>Member</p>
+          <h4 class="text-sm font-semibold text-white">John Doe</h4>
+          <p class="text-xs text-white/50">Member</p>
         </div>
       </div>
 
-      <ul class="sidebar-menu">
-        <li>
-          <a href="#" class="active" id="nav-dashboard"
-            ><i class="fas fa-home"></i> Dashboard</a
-          >
-        </li>
-        <li>
-          <a href="#" id="nav-profile"
-            ><i class="fas fa-user"></i> My Profile</a
-          >
-        </li>
-        <li>
-          <a href="application.html" id="nav-apply-external"
-            ><i class="fas fa-plus-circle"></i> Apply for Service</a
-          >
-        </li>
-        <li>
-          <a href="#" id="nav-loans"><i class="fas fa-wallet"></i> My Loans</a>
-        </li>
-        <li>
-          <a href="#" id="nav-investments"><i class="fas fa-piggy-bank"></i> Investments</a>
-        </li>
-        <li>
-          <a href="#" id="nav-forex"><i class="fas fa-chart-line"></i> Forex Trading</a>
-        </li>
-        <li>
-          <a href="#" id="nav-settings"><i class="fas fa-cog"></i> Settings</a>
-        </li>
-      </ul>
+      <nav class="flex-1 px-4 py-2 overflow-y-auto">
+        <ul class="space-y-1">
+          <li>
+            <a href="#" class="active flex items-center gap-3 px-4 py-3 rounded-lg text-white/60 hover:bg-accent hover:text-white transition-all" id="nav-dashboard">
+              <i class="fas fa-home w-5 text-center"></i> Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-white/60 hover:bg-accent hover:text-white transition-all" id="nav-profile">
+              <i class="fas fa-user w-5 text-center"></i> My Profile
+            </a>
+          </li>
+          <li>
+            <a href="application.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-white/60 hover:bg-accent hover:text-white transition-all">
+              <i class="fas fa-plus-circle w-5 text-center"></i> Apply for Service
+            </a>
+          </li>
+          <li>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-white/60 hover:bg-accent hover:text-white transition-all" id="nav-loans">
+              <i class="fas fa-wallet w-5 text-center"></i> My Loans
+            </a>
+          </li>
+          <li>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-white/60 hover:bg-accent hover:text-white transition-all" id="nav-investments">
+              <i class="fas fa-piggy-bank w-5 text-center"></i> Investments
+            </a>
+          </li>
+          <li>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-white/60 hover:bg-accent hover:text-white transition-all" id="nav-forex">
+              <i class="fas fa-chart-line w-5 text-center"></i> Forex Trading
+            </a>
+          </li>
+          <li>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-white/60 hover:bg-accent hover:text-white transition-all" id="nav-settings">
+              <i class="fas fa-cog w-5 text-center"></i> Settings
+            </a>
+          </li>
+        </ul>
+      </nav>
 
-      <div style="padding: 20px">
+      <div class="p-5">
         <a
           href="index.html"
-          class="btn btn-outline"
-          style="
-            width: 100%;
-            text-align: center;
-            border-color: rgba(255, 255, 255, 0.3);
-            color: white;
-          "
-          >Logout</a
+          class="block w-full text-center px-4 py-3 border border-white/30 text-white rounded-full hover:bg-white hover:text-primary transition-all font-medium"
         >
+          <i class="fas fa-sign-out-alt mr-2"></i>Logout
+        </a>
       </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="dashboard-main">
-      <div class="dashboard-topbar">
+    <main class="dashboard-main flex-1 ml-64 p-10 bg-slate-50 min-h-screen">
+      <div class="flex justify-between items-center mb-10">
         <button
-          class="mobile-menu-btn"
+          class="lg:hidden mobile-menu-btn p-3 rounded-lg bg-white shadow-md text-primary"
           id="sidebarToggle"
-          style="display: none; color: var(--primary-blue)"
         >
-          ☰
+          <i class="fas fa-bars text-xl"></i>
         </button>
         <div class="welcome-text">
-          <h2>My Account Overview</h2>
-          <p>Welcome back, John!</p>
+          <h2 class="text-2xl font-bold text-primary mb-1">My Account Overview</h2>
+          <p class="text-gray-500">Welcome back, John!</p>
         </div>
-        <div class="theme-toggle">
-          <span class="theme-icon">🌙</span>
-        </div>
+        <button class="theme-toggle p-3 rounded-lg hover:bg-white shadow-md transition-all">
+          <span class="theme-icon text-xl">🌙</span>
+        </button>
       </div>
 
       <!-- View: Dashboard Overview -->
       <div id="view-dashboard" class="dashboard-view active">
         
         <!-- Verification Banner (Hidden by default) -->
-        <div id="verification-banner" style="display: none; background: #fef2f2; border: 1px solid #fecaca; padding: 16px; border-radius: 8px; margin-bottom: 24px; color: #ef4444; align-items: center; justify-content: space-between;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <i class="fas fa-exclamation-circle" style="font-size: 1.5rem;"></i>
+        <div id="verification-banner" class="hidden bg-red-50 border border-red-200 p-4 rounded-lg mb-6 text-red-600 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-exclamation-circle text-2xl"></i>
                 <div>
-                    <strong style="display: block; margin-bottom: 4px;">Account Action Required</strong>
-                    <span id="verification-banner-text" style="font-size: 0.9rem;">Please verify your email and complete your profile.</span>
+                    <strong class="block mb-1">Account Action Required</strong>
+                    <span id="verification-banner-text" class="text-sm">Please verify your email and complete your profile.</span>
                 </div>
             </div>
-            <button class="btn btn-sm" onclick="document.getElementById('nav-profile').click()" style="background: #ef4444; color: white; border: none; padding: 8px 16px;">Complete Profile</button>
+            <button onclick="document.getElementById('nav-profile').click()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm font-medium">
+                Complete Profile
+            </button>
         </div>
 
         <!-- Welcome / Total Balance Hero -->
-        <div class="dashboard-hero" style="background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)); color: white; padding: 32px; border-radius: 24px; margin-bottom: 32px; position: relative; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
-            <div style="position: relative; z-index: 1;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                    <p style="opacity: 0.8; font-size: 0.9rem; margin: 0;">TOTAL BALANCE</p>
-                    <button id="toggle-balance-btn" style="background: none; border: none; color: white; opacity: 0.7; cursor: pointer;">
+        <div class="dashboard-hero bg-gradient-to-br from-primary to-secondary text-white p-8 rounded-3xl mb-8 relative overflow-hidden shadow-2xl">
+            <div class="relative z-10">
+                <div class="flex items-center gap-3 mb-2">
+                    <p class="text-white/70 text-sm uppercase tracking-wider">Total Balance</p>
+                    <button id="toggle-balance-btn" class="bg-transparent border-none text-white/60 hover:text-white cursor-pointer transition-colors">
                         <i class="fas fa-eye"></i>
                     </button>
                 </div>
-                <h1 id="total-balance-display" style="font-size: 3rem; font-weight: 700; margin: 0; letter-spacing: -1px; display: flex; align-items: center; gap: 10px;">
+                <h1 id="total-balance-display" class="text-5xl font-bold tracking-tight flex items-center gap-3 mb-6">
                     <span class="currency">₦</span><span class="amount">0.00</span>
                 </h1>
-                <div style="margin-top: 24px; display: flex; gap: 12px;">
-                     <button id="btn-topup-trigger" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
-                        <i class="fas fa-plus"></i> Top Up
+                <div class="flex gap-4">
+                     <button id="btn-topup-trigger" class="px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur border border-white/20 rounded-full font-medium transition-all hover:scale-105">
+                         <i class="fas fa-plus mr-2"></i> Top Up
                      </button>
-                     <button id="btn-transfer-trigger" class="btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);">
-                        <i class="fas fa-paper-plane"></i> Transfer
+                     <button id="btn-transfer-trigger" class="px-6 py-3 bg-accent hover:bg-blue-600 rounded-full font-medium transition-all hover:scale-105 shadow-lg">
+                         <i class="fas fa-paper-plane mr-2"></i> Transfer
                      </button>
                 </div>
             </div>
             <!-- Decorative circle -->
-            <div style="position: absolute; right: -50px; top: -50px; width: 300px; height: 300px; background: radial-gradient(circle, var(--accent-blue), transparent); opacity: 0.3; border-radius: 50%;"></div>
+            <div class="absolute -right-20 -top-20 w-72 h-72 bg-accent/30 rounded-full blur-3xl"></div>
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-success/20 rounded-full blur-2xl"></div>
         </div>
 
-        <h3 style="margin-bottom: 24px; color: var(--primary-blue);">Financial Overview</h3>
+        <h3 class="text-xl font-bold text-primary mb-6">Financial Overview</h3>
 
-        <div class="dashboard-grid">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           
           <!-- Account Details Widget -->
-          <div class="stat-card" style="background: linear-gradient(135deg, #0f172a 0%, #334155 100%); color: white; position: relative;">
-            <div style="display:flex; justify-content:space-between; align-items:start; width:100%">
+          <div class="bg-gradient-to-br from-slate-800 to-slate-900 text-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 relative overflow-hidden">
+            <div class="flex justify-between items-start mb-4">
                <div>
-                  <div class="stat-icon" style="background: rgba(255,255,255,0.1); color: white;"><i class="fas fa-university"></i></div>
-                  <div class="stat-info">
-                     <p style="color: rgba(255,255,255,0.7);">Account Details</p>
-                     <h3 style="color: white; font-size: 1.5rem; letter-spacing: 2px;" id="account-number">Loading...</h3>
-                     <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 5px;">E-Adem Savings</p>
+                  <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-4">
+                    <i class="fas fa-university text-xl"></i>
                   </div>
+                  <p class="text-white/60 text-sm uppercase tracking-wide mb-1">Account Details</p>
+                  <h3 class="text-xl font-bold tracking-widest" id="account-number">Loading...</h3>
+                  <p class="text-white/50 text-xs mt-2">E-Adem Savings</p>
                </div>
-               <button class="btn btn-sm" onclick="copyAccountNum()" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: white; font-size: 0.8rem; padding: 4px 10px;">
-                   <i class="far fa-copy"></i> Copy
+               <button onclick="copyAccountNum()" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-sm transition-all">
+                   <i class="far fa-copy mr-1"></i> Copy
                </button>
             </div>
-            <div style="margin-top: auto; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; display: flex; justify-content: space-between;">
-               <span>Sort Code: <strong>058123</strong></span>
-               <span style="color: #4ade80;"><i class="fas fa-check-circle"></i> Active</span>
+            <div class="flex justify-between items-center pt-4 border-t border-white/10 text-sm">
+               <span>Sort Code: <strong class="font-bold">058123</strong></span>
+               <span class="text-emerald-400"><i class="fas fa-check-circle mr-1"></i> Active</span>
             </div>
+            <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-accent/20 rounded-full blur-2xl"></div>
           </div>
 
-          <div class="stat-card">
-            <div style="display:flex; justify-content:space-between; align-items:start; width:100%">
+          <!-- Active Loan Card -->
+          <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 border border-gray-100">
+            <div class="flex justify-between items-start mb-4">
                 <div>
-                   <div class="stat-icon"><i class="fas fa-file-invoice-dollar"></i></div>
-                   <div class="stat-info">
-                      <p>Active Loan</p>
-                      <h3 id="active-loan-amount">₦0.00</h3>
+                   <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-4">
+                     <i class="fas fa-file-invoice-dollar text-xl text-amber-600"></i>
                    </div>
+                   <p class="text-gray-500 text-sm uppercase tracking-wide mb-1">Active Loan</p>
+                   <h3 class="text-2xl font-bold text-gray-800" id="active-loan-amount">₦0.00</h3>
                 </div>
-                <!-- Status Badge -->
-                <div id="active-loan-status" style="background: #ecfdf5; color: var(--success-green); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                <div id="active-loan-status" class="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-xs font-semibold">
                     No Active Loans
                 </div>
             </div>
-            <!-- Progress Bar -->
-            <div style="margin-top: 15px; width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
-                <div id="loan-progress" style="width: 0%; height: 100%; background: var(--accent-blue); transition: width 0.5s;"></div>
+            <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div id="loan-progress" class="h-full bg-accent rounded-full transition-all duration-500" style="width: 0%"></div>
             </div>
-            <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 5px; text-align: right;">0% Repaid</p>
+            <p class="text-gray-400 text-xs mt-2 text-right">0% Repaid</p>
           </div>
 
-          <div class="stat-card">
-             <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
-             <div class="stat-info">
-                <p>Investment Value</p>
-                <h3>₦0.00</h3>
-             </div>
-             <div style="margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-color); width: 100%;">
-                <span style="color: var(--success-green); font-size: 0.85rem; font-weight: 600;">
-                    <i class="fas fa-arrow-up"></i> 0%
-                </span>
-                <span style="color: var(--text-secondary); font-size: 0.85rem;"> vs last month</span>
-             </div>
+          <!-- Investment Card -->
+          <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 border border-gray-100">
+            <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mb-4">
+              <i class="fas fa-chart-line text-xl text-emerald-600"></i>
+            </div>
+            <p class="text-gray-500 text-sm uppercase tracking-wide mb-1">Investment Value</p>
+            <h3 class="text-2xl font-bold text-gray-800">₦0.00</h3>
+            <div class="mt-4 pt-4 border-t border-gray-100">
+               <span class="text-emerald-500 font-semibold text-sm">
+                   <i class="fas fa-arrow-up mr-1"></i> 0%
+               </span>
+               <span class="text-gray-400 text-sm ml-1">vs last month</span>
+            </div>
           </div>
         </div>
 
         <!-- Recent Transactions Section -->
-        <h3 style="margin: 32px 0 24px; color: var(--primary-blue); display: flex; justify-content: space-between; align-items: center;">
-            Recent Transactions
-            <a href="#" style="font-size: 0.9rem; color: var(--accent-blue); text-decoration: none;">View All</a>
-        </h3>
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-primary">Recent Transactions</h3>
+            <a href="#" class="text-accent hover:text-blue-600 text-sm font-medium transition-colors">View All</a>
+        </div>
         
-        <div class="card" style="padding: 0; overflow: hidden;">
-            <div class="table-responsive">
-                <table class="transaction-table">
-                    <thead>
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-slate-50 text-gray-600 text-xs uppercase tracking-wider">
                         <tr>
-                            <th>Type</th>
-                            <th>Description</th>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Status</th>
+                            <th class="px-6 py-4 text-left">Type</th>
+                            <th class="px-6 py-4 text-left">Description</th>
+                            <th class="px-6 py-4 text-left">Date</th>
+                            <th class="px-6 py-4 text-left">Amount</th>
+                            <th class="px-6 py-4 text-left">Status</th>
                         </tr>
                     </thead>
-                    <tbody id="transaction-list">
-                        <!-- Mock Data will be injected here -->
-                        <tr>
-                            <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-secondary);">Loading transactions...</td>
+                    <tbody id="transaction-list" class="divide-y divide-gray-100">
+                        <!-- Transactions will be injected here -->
+                        <tr class="loading-row">
+                            <td colspan="5" class="px-6 py-12 text-center">
+                                <div class="text-gray-400">
+                                    <i class="fas fa-spinner fa-spin text-2xl mb-3"></i>
+                                    <p>Loading transactions...</p>
+                                </div>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -225,110 +262,140 @@
         </div>
       </div>
 
-      <!-- View: My Profile -->
+      <!-- View: My Profile - Updated with Tailwind -->
       <div id="view-profile" class="dashboard-view">
-        <div class="profile-container">
+        <div class="max-w-4xl mx-auto pb-10">
             <!-- Header Card -->
-             <div class="profile-header-card">
-                 <div class="profile-banner-section"></div>
-                 <div class="profile-user-section">
-                     <div class="profile-avatar-container">
-                         <img src="images/default-avatar.png" alt="Profile" class="profile-avatar-large" id="profile-image-preview" />
-                         <label for="profile-upload" class="profile-upload-btn">
-                             <i class="fas fa-camera"></i>
-                         </label>
-                         <input type="file" id="profile-upload" accept="image/*" style="display: none;">
-                     </div>
-                     <div class="profile-identity">
-                         <h2 class="profile-name">Loading...</h2>
-                         <span id="main-verification-badge" class="profile-badge status-pending" style="background: rgba(2ef, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">Unverified Member</span>
-                     </div>
-                     <button id="upload-btn" class="btn btn-sm" style="display: none; background: var(--success-green); border: none;">Save Photo</button>
-                 </div>
-             </div>
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-6 border border-gray-100">
+                <!-- Banner -->
+                <div class="h-48 bg-gradient-to-br from-primary via-secondary to-accent relative">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                </div>
+                <!-- Profile Info -->
+                <div class="px-8 pb-6 -mt-20 relative">
+                    <div class="flex items-end gap-6">
+                        <div class="relative">
+                            <img src="images/default-avatar.png" alt="Profile" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-xl" id="profile-image-preview">
+                            <label for="profile-upload" class="absolute bottom-2 right-2 w-10 h-10 bg-accent hover:bg-blue-600 text-white rounded-full flex items-center justify-center cursor-pointer transition-colors shadow-lg">
+                                <i class="fas fa-camera text-sm"></i>
+                            </label>
+                            <input type="file" id="profile-upload" accept="image/*" class="hidden">
+                        </div>
+                        <div class="mb-2 flex-1">
+                            <h2 class="text-2xl font-bold text-gray-800 profile-name">Loading...</h2>
+                            <span id="main-verification-badge" class="inline-block px-4 py-1 bg-red-100 text-red-600 rounded-full text-sm font-semibold">Unverified Member</span>
+                        </div>
+                        <button id="upload-btn" class="hidden mb-2 px-4 py-2 bg-success hover:bg-emerald-600 text-white rounded-lg transition-colors">
+                            <i class="fas fa-check mr-2"></i>Save Photo
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-             <!-- Details Grid -->
-             <div class="profile-grid-layout">
-                 <!-- Personal Info -->
-                 <div class="profile-section-card">
-                     <div class="profile-section-header">
-                         <h3><i class="fas fa-user-circle"></i> Personal Details</h3>
-                         <button id="save-profile-btn" class="btn btn-sm" style="background: var(--accent-blue); color: white; border: none; padding: 6px 14px; font-size: 0.9rem;">
-                             <i class="fas fa-save"></i> Save Changes
-                         </button>
-                     </div>
-                     <form id="profile-form">
-                         <div class="profile-detail-list">
-                             <div class="profile-detail-item">
-                                 <div class="detail-label-flex">
-                                     <div class="detail-icon-box"><i class="fas fa-envelope"></i></div>
-                                     <span>Email Address</span>
-                                 </div>
-                                 <input type="email" id="profile-email" class="form-control profile-input" readonly style="background: var(--light-gray); cursor: not-allowed;">
-                             </div>
-                             <div class="profile-detail-item">
-                                 <div class="detail-label-flex">
-                                     <div class="detail-icon-box"><i class="fas fa-phone"></i></div>
-                                     <span>Phone Number</span>
-                                 </div>
-                                 <input type="tel" id="profile-phone" class="form-control profile-input" placeholder="Enter phone number">
-                             </div>
-                             <div class="profile-detail-item">
-                                 <div class="detail-label-flex">
-                                     <div class="detail-icon-box"><i class="fas fa-map-marker-alt"></i></div>
-                                     <span>Address</span>
-                                 </div>
-                                 <input type="text" id="profile-address" class="form-control profile-input" placeholder="Enter residential address">
-                             </div>
-                             <div class="profile-detail-item">
-                                <div class="detail-label-flex">
-                                    <div class="detail-icon-box"><i class="fas fa-id-card"></i></div>
-                                    <span>NIN (11 Digits)</span>
+            <!-- Details Grid -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Personal Info -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+                        <h3 class="text-lg font-bold text-primary flex items-center gap-2">
+                            <i class="fas fa-user-circle text-accent"></i> Personal Details
+                        </h3>
+                        <button id="save-profile-btn" class="px-4 py-2 bg-accent hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors">
+                            <i class="fas fa-save mr-2"></i>Save Changes
+                        </button>
+                    </div>
+                    <form id="profile-form" class="space-y-4">
+                        <!-- Email -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-envelope text-accent"></i>
                                 </div>
-                                <input type="text" id="profile-nin" class="form-control profile-input" placeholder="Enter 11-digit NIN" maxlength="11" pattern="\d{11}">
+                                <span class="text-gray-600">Email</span>
                             </div>
-                            <small class="text-muted" style="display: block; text-align: right; font-size: 0.8rem; color: var(--text-secondary);">*NIN will be locked after verification</small>
-                         </div>
-                     </form>
-                 </div>
+                            <input type="email" id="profile-email" readonly class="bg-gray-100 px-3 py-2 rounded-lg text-gray-800 w-48 text-right cursor-not-allowed text-sm">
+                        </div>
+                        <!-- Phone -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-phone text-success"></i>
+                                </div>
+                                <span class="text-gray-600">Phone</span>
+                            </div>
+                            <input type="tel" id="profile-phone" placeholder="Add phone" class="bg-white px-3 py-2 rounded-lg border border-gray-200 w-48 text-right text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                        </div>
+                        <!-- Address -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-map-marker-alt text-amber-500"></i>
+                                </div>
+                                <span class="text-gray-600">Address</span>
+                            </div>
+                            <input type="text" id="profile-address" placeholder="Add address" class="bg-white px-3 py-2 rounded-lg border border-gray-200 w-48 text-right text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                        </div>
+                        <!-- NIN -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-id-card text-purple-500"></i>
+                                </div>
+                                <span class="text-gray-600">NIN</span>
+                            </div>
+                            <input type="text" id="profile-nin" placeholder="11 digits" maxlength="11" class="bg-white px-3 py-2 rounded-lg border border-gray-200 w-48 text-right text-sm focus:outline-none focus:ring-2 focus:ring-accent">
+                        </div>
+                        <p class="text-xs text-gray-400 text-right">*NIN will be locked after verification</p>
+                    </form>
+                </div>
 
-                 <!-- Account Info -->
-                 <div class="profile-section-card">
-                     <div class="profile-section-header">
-                         <h3><i class="fas fa-shield-alt"></i> Account Status</h3>
-                     </div>
-                     <div class="profile-detail-list">
-                         <div class="profile-detail-item">
-                             <div class="detail-label-flex">
-                                 <div class="detail-icon-box"><i class="fas fa-fingerprint"></i></div>
-                                 <span>Account ID</span>
-                             </div>
-                             <span class="detail-value-text profile-id">Loading...</span>
-                         </div>
-                         <div class="profile-detail-item">
-                             <div class="detail-label-flex">
-                                 <div class="detail-icon-box"><i class="fas fa-calendar-alt"></i></div>
-                                 <span>Member Since</span>
-                             </div>
-                             <span class="detail-value-text profile-date">Loading...</span>
-                         </div>
-                         <div class="profile-detail-item">
-                             <div class="detail-label-flex">
-                                 <div class="detail-icon-box"><i class="fas fa-envelope-open-text"></i></div>
-                                 <span>Email Status</span>
-                             </div>
-                             <span id="email-status-badge" class="status-badge status-pending">Unverified</span>
-                         </div>
-                         <div class="profile-detail-item">
-                             <div class="detail-label-flex">
-                                 <div class="detail-icon-box"><i class="fas fa-user-check"></i></div>
-                                 <span>NIN Status</span>
-                             </div>
-                             <span id="nin-status-badge" class="status-badge status-pending">Unverified</span>
-                         </div>
-                     </div>
-                 </div>
-             </div>
+                <!-- Account Info -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                    <div class="mb-6 pb-4 border-b border-gray-100">
+                        <h3 class="text-lg font-bold text-primary flex items-center gap-2">
+                            <i class="fas fa-shield-alt text-accent"></i> Account Status
+                        </h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-fingerprint text-gray-600"></i>
+                                </div>
+                                <span class="text-gray-600">Account ID</span>
+                            </div>
+                            <span class="font-mono font-semibold text-gray-800 profile-id">Loading...</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-calendar-alt text-accent"></i>
+                                </div>
+                                <span class="text-gray-600">Member Since</span>
+                            </div>
+                            <span class="font-semibold text-gray-800 profile-date">Loading...</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-envelope-open-text text-blue-500"></i>
+                                </div>
+                                <span class="text-gray-600">Email Status</span>
+                            </div>
+                            <span id="email-status-badge" class="px-3 py-1 bg-yellow-100 text-yellow-600 rounded-full text-xs font-semibold">Unverified</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-user-check text-purple-500"></i>
+                                </div>
+                                <span class="text-gray-600">NIN Status</span>
+                            </div>
+                            <span id="nin-status-badge" class="px-3 py-1 bg-yellow-100 text-yellow-600 rounded-full text-xs font-semibold">Unverified</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
       </div>
 
@@ -516,14 +583,14 @@
              <div class="card" style="flex: 1; min-width: 300px;">
                  <h3 style="margin-bottom: 20px; color: var(--primary-blue);"><i class="fas fa-shield-alt"></i> Security</h3>
                  <form id="settings-password-form">
-                     <div class="form-group">
-                         <label>Current Password</label>
-                         <input type="password" class="form-control" placeholder="••••••••">
-                     </div>
-                     <div class="form-group">
-                         <label>New Password</label>
-                         <input type="password" class="form-control" placeholder="••••••••">
-                     </div>
+              <div class="form-group">
+                          <label>Current Password</label>
+                          <input type="password" id="current-password" class="form-control" placeholder="••••••••">
+                      </div>
+                      <div class="form-group">
+                          <label>New Password</label>
+                          <input type="password" id="new-password" class="form-control" placeholder="••••••••">
+                      </div>
                      <button class="btn btn-primary" style="width: 100%;">Update Password</button>
                  </form>
                  
@@ -590,39 +657,109 @@
 
     </main>
 
+    <!-- Top Up Modal -->
+    <div id="modal-topup" class="hidden fixed inset-0 bg-black/60 z-[2000] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full relative shadow-2xl">
+            <button onclick="document.getElementById('modal-topup').style.display='none'" class="absolute top-4 right-4 w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center mb-6">
+                <i class="fas fa-wallet text-2xl text-accent"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-primary mb-6">Fund Wallet</h3>
+            <form id="form-topup">
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-2">Amount (₦)</label>
+                    <input type="number" id="topup-amount" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all" placeholder="Enter amount" min="100" required>
+                    <p class="text-gray-400 text-sm mt-2">Minimum: ₦100</p>
+                </div>
+                <button type="submit" id="btn-submit-topup" class="w-full py-4 bg-accent hover:bg-blue-600 text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl">
+                    <i class="fas fa-lock mr-2"></i> Proceed to Pay
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Transfer Modal -->
+    <div id="modal-transfer" class="hidden fixed inset-0 bg-black/60 z-[2000] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full relative shadow-2xl">
+            <button onclick="document.getElementById('modal-transfer').style.display='none'" class="absolute top-4 right-4 w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="w-16 h-16 bg-success/10 rounded-2xl flex items-center justify-center mb-6">
+                <i class="fas fa-paper-plane text-2xl text-success"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-primary mb-6">Transfer Funds</h3>
+            <form id="form-transfer">
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-medium mb-2">Recipient Email</label>
+                    <input type="email" id="transfer-email" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all" placeholder="Enter recipient's email" required>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-2">Amount (₦)</label>
+                    <input type="number" id="transfer-amount" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all" placeholder="Enter amount" min="1" required>
+                </div>
+                <button type="submit" id="btn-submit-transfer" class="w-full py-4 bg-success hover:bg-emerald-600 text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl">
+                    <i class="fas fa-paper-plane mr-2"></i> Send Transfer
+                </button>
+            </form>
+        </div>
+    </div>
+
     <script>
       // Simple script for sidebar toggle
       const toggleBtn = document.getElementById("sidebarToggle");
       const sidebar = document.getElementById("sidebar");
 
       // Show toggle button on mobile
-      if (window.innerWidth <= 992) {
+      if (window.innerWidth <= 1024) {
         toggleBtn.style.display = "block";
       }
 
       window.addEventListener("resize", () => {
-        if (window.innerWidth <= 992) {
+        if (window.innerWidth <= 1024) {
           toggleBtn.style.display = "block";
+          sidebar.classList.add("-translate-x-full");
         } else {
           toggleBtn.style.display = "none";
+          sidebar.classList.remove("-translate-x-full");
         }
       });
 
       toggleBtn.addEventListener("click", () => {
-        sidebar.classList.toggle("active");
+        sidebar.classList.toggle("-translate-x-full");
+      });
+
+      // Close sidebar when clicking a link on mobile
+      sidebar.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth <= 1024) {
+            sidebar.classList.add("-translate-x-full");
+          }
+        });
       });
 
       // Close sidebar when clicking outside on mobile
       document.addEventListener("click", (e) => {
         if (
-          window.innerWidth <= 992 &&
+          window.innerWidth <= 1024 &&
           !sidebar.contains(e.target) &&
           !toggleBtn.contains(e.target) &&
-          sidebar.classList.contains("active")
+          !sidebar.classList.contains("-translate-x-full")
         ) {
-          sidebar.classList.remove("active");
+          sidebar.classList.add("-translate-x-full");
         }
       });
+
+      // Modal display helper - update Tailwind classes
+      window.showModal = function(modalId, show = true) {
+        const modal = document.getElementById(modalId);
+        if (show) {
+          modal.classList.remove('hidden');
+        } else {
+          modal.classList.add('hidden');
+        }
+      };
     </script>
     <script src="main.js"></script>
     <script src="auth-v2.js"></script>

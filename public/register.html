@@ -4,57 +4,220 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register | E-Adem Global Company Limited</title>
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f172a',
+                        secondary: '#1e293b',
+                        accent: '#3b82f6',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .strength-bar::after {
+            content: '';
+            display: block;
+            height: 100%;
+            width: var(--strength, 0%);
+            background: var(--strength-color, #374151);
+            transition: width 0.3s, background 0.3s;
+        }
+    </style>
 </head>
-<body class="auth-body">
-    <!-- Decorative Background Circles -->
-    <div class="auth-bg-circle" style="width: 600px; height: 600px; top: -150px; right: -150px;"></div>
-    <div class="auth-bg-circle" style="width: 300px; height: 300px; bottom: 50px; left: -50px; background: radial-gradient(circle, var(--secondary-blue), transparent);"></div>
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary via-secondary to-primary p-4">
+    <!-- Decorative Background -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-accent/20 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
+    </div>
 
-    <div class="auth-card">
-        <div class="auth-content">
-            <div class="auth-header">
-                <a href="index.html">
-                    <img src="./images/logo.png" alt="E-Adem Logo" class="auth-logo">
-                </a>
-                <h2 class="auth-title">Create Account</h2>
-                <p class="auth-subtitle">Join us and start your financial journey</p>
+    <div class="relative w-full max-w-lg">
+        <!-- Logo -->
+        <div class="text-center mb-6">
+            <a href="index.html">
+                <img src="./images/logo.png" alt="E-Adem Logo" class="h-20 mx-auto mb-4">
+            </a>
+        </div>
+
+        <!-- Register Card -->
+        <div class="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/10">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-bold text-white mb-2">Create Account</h2>
+                <p class="text-gray-300">Join us and start your financial journey</p>
             </div>
 
-            <form id="register-form">
-                <div class="input-group">
-                    <input type="text" id="fullname" class="input-field" placeholder=" " required>
-                    <label for="fullname" class="input-label">Full Name</label>
+            <form id="register-form" novalidate class="space-y-5">
+                <!-- Full Name -->
+                <div class="relative">
+                    <input type="text" id="fullname" class="w-full px-5 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all peer" placeholder=" " required minlength="2">
+                    <label for="fullname" class="absolute left-5 top-4 text-gray-400 pointer-events-none transition-all duration-200 peer-focus:-translate-y-7 peer-focus:text-xs peer-focus:text-accent peer-[:not(:placeholder-shown)]:-translate-y-7 peer-[:not(:placeholder-shown)]:text-xs">
+                        <i class="fas fa-user mr-2"></i>Full Name
+                    </label>
+                    <span class="field-error text-red-400 text-xs mt-1 hidden" id="fullname-error"></span>
                 </div>
 
-                <div class="input-group">
-                    <input type="email" id="email" class="input-field" placeholder=" " required>
-                    <label for="email" class="input-label">Email Address</label>
+                <!-- Email -->
+                <div class="relative">
+                    <input type="email" id="email" class="w-full px-5 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all peer" placeholder=" " required>
+                    <label for="email" class="absolute left-5 top-4 text-gray-400 pointer-events-none transition-all duration-200 peer-focus:-translate-y-7 peer-focus:text-xs peer-focus:text-accent peer-[:not(:placeholder-shown)]:-translate-y-7 peer-[:not(:placeholder-shown)]:text-xs">
+                        <i class="fas fa-envelope mr-2"></i>Email Address
+                    </label>
+                    <span class="field-error text-red-400 text-xs mt-1 hidden" id="email-error"></span>
                 </div>
 
-                <div class="input-group">
-                    <input type="tel" id="phone" class="input-field" placeholder=" " required>
-                    <label for="phone" class="input-label">Phone Number</label>
+                <!-- Phone -->
+                <div class="relative">
+                    <input type="tel" id="phone" class="w-full px-5 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all peer" placeholder=" " required>
+                    <label for="phone" class="absolute left-5 top-4 text-gray-400 pointer-events-none transition-all duration-200 peer-focus:-translate-y-7 peer-focus:text-xs peer-focus:text-accent peer-[:not(:placeholder-shown)]:-translate-y-7 peer-[:not(:placeholder-shown)]:text-xs">
+                        <i class="fas fa-phone mr-2"></i>Phone Number
+                    </label>
+                    <span class="field-error text-red-400 text-xs mt-1 hidden" id="phone-error"></span>
                 </div>
 
-                <div class="input-group">
-                    <input type="password" id="password" class="input-field" placeholder=" " required>
-                    <label for="password" class="input-label">Password</label>
-                    <button type="button" class="password-toggle" aria-label="Toggle password visibility">
+                <!-- Password -->
+                <div class="relative">
+                    <input type="password" id="password" class="w-full px-5 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all pr-12" placeholder=" " required minlength="8">
+                    <label for="password" class="absolute left-5 top-4 text-gray-400 pointer-events-none transition-all duration-200 peer-focus:-translate-y-7 peer-focus:text-xs peer-focus:text-accent peer-[:not(:placeholder-shown)]:-translate-y-7 peer-[:not(:placeholder-shown)]:text-xs">
+                        <i class="fas fa-lock mr-2"></i>Password
+                    </label>
+                    <button type="button" class="password-toggle absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
                         <i class="far fa-eye"></i>
                     </button>
+                    <!-- Password Strength -->
+                    <div class="password-strength flex items-center gap-2 mt-2">
+                        <div class="strength-bar flex-1 h-1 bg-gray-600 rounded-full overflow-hidden" style="--strength: 0%; --strength-color: #374151;">
+                        </div>
+                        <span class="strength-text text-xs text-gray-400 w-12">Weak</span>
+                    </div>
+                    <span class="field-error text-red-400 text-xs mt-1 hidden" id="password-error"></span>
                 </div>
 
-                <button type="submit" class="auth-btn">Register</button>
+                <!-- Confirm Password -->
+                <div class="relative">
+                    <input type="password" id="confirm-password" class="w-full px-5 py-4 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all" placeholder=" " required>
+                    <label for="confirm-password" class="absolute left-5 top-4 text-gray-400 pointer-events-none transition-all">
+                        <i class="fas fa-lock mr-2"></i>Confirm Password
+                    </label>
+                    <span class="field-error text-red-400 text-xs mt-1 hidden" id="confirm-password-error"></span>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-4 bg-accent hover:bg-blue-600 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] mt-6">
+                    <i class="fas fa-user-plus mr-2"></i>Create Account
+                </button>
             </form>
 
-            <div class="auth-links">
-                <p>Already have an account? <a href="login.html">Sign In</a></p>
+            <!-- Links -->
+            <div class="mt-6 text-center">
+                <p class="text-gray-300">
+                    Already have an account? 
+                    <a href="login.html" class="text-accent hover:text-blue-400 font-semibold transition-colors">Sign In</a>
+                </p>
             </div>
         </div>
     </div>
+
     <script src="main.js"></script>
     <script src="auth-v2.js"></script>
+    <script>
+        // Password strength checker
+        const passwordInput = document.getElementById('password');
+        const confirmInput = document.getElementById('confirm-password');
+        const strengthBar = document.querySelector('.strength-bar');
+        
+        passwordInput?.addEventListener('input', function() {
+            const val = this.value;
+            let strength = 0;
+            let color = '#ef4444';
+            let text = 'Weak';
+            
+            if (val.length >= 8) strength += 25;
+            if (/[A-Z]/.test(val)) strength += 25;
+            if (/[0-9]/.test(val)) strength += 25;
+            if (/[^A-Za-z0-9]/.test(val)) strength += 25;
+            
+            if (strength >= 75) { color = '#10b981'; text = 'Strong'; }
+            else if (strength >= 50) { color = '#f59e0b'; text = 'Medium'; }
+            else if (strength > 0) { color = '#ef4444'; text = 'Weak'; }
+            else { text = ''; }
+            
+            if (strengthBar) {
+                strengthBar.style.setProperty('--strength', strength + '%');
+                strengthBar.style.setProperty('--strength-color', color);
+            }
+            const strengthText = document.querySelector('.strength-text');
+            if (strengthText) strengthText.textContent = text;
+        });
+        
+        // Real-time validation
+        const fields = ['fullname', 'email', 'phone', 'password', 'confirm-password'];
+        fields.forEach(id => {
+            const input = document.getElementById(id);
+            const error = document.getElementById(id + '-error');
+            if (!input || !error) return;
+            
+            input.addEventListener('blur', () => validateField(input, error));
+            input.addEventListener('input', () => {
+                if (error.textContent) validateField(input, error);
+            });
+        });
+        
+        function validateField(input, error) {
+            const id = input.id;
+            let valid = true;
+            let msg = '';
+            
+            if (!input.value.trim()) {
+                valid = false;
+                msg = 'This field is required';
+            } else if (id === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value)) {
+                valid = false;
+                msg = 'Please enter a valid email';
+            } else if (id === 'phone' && !/^[0-9+\s-]{10,}$/.test(input.value)) {
+                valid = false;
+                msg = 'Please enter a valid phone number';
+            } else if (id === 'password' && input.value.length < 8) {
+                valid = false;
+                msg = 'Password must be at least 8 characters';
+            } else if (id === 'confirm-password' && input.value !== passwordInput.value) {
+                valid = false;
+                msg = 'Passwords do not match';
+            }
+            
+            if (msg) {
+                error.textContent = msg;
+                error.classList.remove('hidden');
+                input.classList.add('!border-red-500');
+            } else {
+                error.classList.add('hidden');
+                input.classList.remove('!border-red-500');
+            }
+            return valid;
+        }
+        
+        // Form validation before submit
+        document.getElementById('register-form')?.addEventListener('submit', function(e) {
+            let isValid = true;
+            fields.forEach(id => {
+                const input = document.getElementById(id);
+                const error = document.getElementById(id + '-error');
+                if (!validateField(input, error)) isValid = false;
+            });
+            
+            if (!isValid) e.preventDefault();
+        });
+    </script>
 </body>
 </html>

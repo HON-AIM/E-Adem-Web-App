@@ -41,6 +41,12 @@ class ThemeManager {
       }
     }
     
+    // Sync settings toggle if exists
+    const settingsToggle = document.getElementById('settings-theme-toggle');
+    if (settingsToggle) {
+      settingsToggle.checked = theme === 'dark';
+    }
+    
     // Save to localStorage
     localStorage.setItem('theme', theme);
     this.currentTheme = theme;
@@ -119,6 +125,15 @@ class TestimonialCarousel {
 
 // Form Validation
 class FormValidator {
+  static showMessage(message, type = 'info') {
+    // Use toast if available, otherwise fallback to alert
+    if (typeof window.showToast === 'function') {
+      window.showToast(message, type);
+    } else {
+      alert(message);
+    }
+  }
+  
   static validateForm(formId) {
     const form = document.getElementById(formId);
     if (!form) return;
@@ -175,14 +190,14 @@ class FormValidator {
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert('Message sent successfully!');
+                    this.showMessage('Message sent successfully!', 'success');
                     form.reset();
                 } else {
-                    alert('Error sending message: ' + result.message);
+                    this.showMessage('Error sending message: ' + result.message, 'error');
                 }
             } catch (error) {
                 console.error('Contact error:', error);
-                alert('Failed to send message. Please try again.');
+                this.showMessage('Failed to send message. Please try again.', 'error');
             } finally {
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
@@ -190,11 +205,11 @@ class FormValidator {
         } 
         // Logic for other legacy forms (if any still exist)
         else {
-             alert('Form submitted successfully!');
+             this.showMessage('Form submitted successfully!', 'success');
              form.reset();
         }
       } else {
-        alert('Please fill in all required fields correctly.');
+        this.showMessage('Please fill in all required fields correctly.', 'warning');
       }
     });
   }
