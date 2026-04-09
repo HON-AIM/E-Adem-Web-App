@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification | E-Adem Global</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f172a',
+                        accent: '#3b82f6',
+                        success: '#10b981',
+                        danger: '#ef4444',
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>* { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);">
+    <!-- Decorative Background -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="relative w-full max-w-lg">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <a href="index.html">
+                <img src="./images/logo.png" alt="E-Adem" class="h-16 mx-auto brightness-0 invert">
+            </a>
+        </div>
+
+        <!-- Card Container -->
+        <div id="verification-card" class="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/10 text-center">
+            <!-- Loading State -->
+            <div id="loading-state">
+                <div class="w-20 h-20 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="animate-spin h-10 w-10 text-accent" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-white mb-2">Verifying...</h2>
+                <p class="text-gray-400">Please wait while we verify your email</p>
+            </div>
+
+            <!-- Success State (hidden by default) -->
+            <div id="success-state" class="hidden">
+                <div class="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-emerald-400 mb-2">Email Verified!</h2>
+                <p class="text-white mb-6">Your email has been successfully verified. You now have full access to your E-Adem account.</p>
+                <div class="space-y-3">
+                    <a href="dashboard.html" class="block w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-all shadow-lg">
+                        Go to Dashboard
+                    </a>
+                    <a href="index.html" class="block w-full py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-all border border-white/20">
+                        Back to Home
+                    </a>
+                </div>
+            </div>
+
+            <!-- Expired/Invalid State (hidden by default) -->
+            <div id="error-state" class="hidden">
+                <div class="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-red-400 mb-2">Verification Failed</h2>
+                <p id="error-message" class="text-white mb-6">The verification link is invalid or has expired.</p>
+                <div class="space-y-3">
+                    <button onclick="resendVerification()" id="resend-btn" class="w-full py-3 bg-accent hover:bg-blue-600 text-white font-semibold rounded-xl transition-all shadow-lg">
+                        <i class="fas fa-paper-plane mr-2"></i>Resend Verification Email
+                    </button>
+                    <a href="login.html" class="block w-full py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-all border border-white/20">
+                        Back to Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <script>
+        // Parse URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get('status');
+        const message = urlParams.get('message');
+        const email = urlParams.get('email');
+
+        const loadingState = document.getElementById('loading-state');
+        const successState = document.getElementById('success-state');
+        const errorState = document.getElementById('error-state');
+        const errorMessage = document.getElementById('error-message');
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const colors = {
+                success: 'bg-emerald-500',
+                error: 'bg-red-500',
+                warning: 'bg-amber-500',
+                info: 'bg-blue-500'
+            };
+            const toast = document.createElement('div');
+            toast.className = `${colors[type] || colors.info} text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3`;
+            toast.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    ${type === 'success' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>' : 
+                      type === 'error' ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>' :
+                      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'}
+                </svg>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Resend verification email
+        async function resendVerification() {
+            if (!email) {
+                showToast('Please enter your email address', 'error');
+                const userEmail = prompt('Enter your email address:');
+                if (!userEmail) return;
+                await sendResendRequest(userEmail);
+            } else {
+                await sendResendRequest(email);
+            }
+        }
+
+        async function sendResendRequest(emailAddr) {
+            const btn = document.getElementById('resend-btn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<svg class="animate-spin h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Sending...' ;
+
+            try {
+                const response = await fetch('/api/resend-verification', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailAddr })
+                });
+                const data = await response.json();
+                showToast(data.message, response.ok ? 'success' : 'error');
+            } catch (error) {
+                showToast('Connection error. Please try again.', 'error');
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+
+        // Check status and show appropriate state
+        setTimeout(() => {
+            if (status === 'success') {
+                loadingState.classList.add('hidden');
+                successState.classList.remove('hidden');
+            } else if (status === 'expired' || status === 'invalid' || status === 'error') {
+                loadingState.classList.add('hidden');
+                errorState.classList.remove('hidden');
+                if (message) {
+                    errorMessage.textContent = decodeURIComponent(message.replace(/\+/g, ' '));
+                }
+            } else {
+                // No status parameter, show generic error
+                loadingState.classList.add('hidden');
+                errorState.classList.remove('hidden');
+                errorMessage.textContent = 'Invalid verification link.';
+            }
+        }, 1500);
+    </script>
+</body>
+</html>

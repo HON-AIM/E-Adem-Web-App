@@ -3,103 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CEO Mindset | E-Adem Microfinance</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>CEO Mindset | E-Adem Global</title>
+    <meta name="description" content="Learn about the leadership philosophy and vision of E-Adem Global's CEO for community empowerment.">
+    
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f172a',
+                        accent: '#3b82f6',
+                        success: '#10b981',
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>* { font-family: 'Inter', sans-serif; }</style>
 </head>
-<body>
+<body class="min-h-screen bg-slate-50">
     <!-- Header -->
-    <header>
-        <div class="container nav-container">
-            <a href="index.html" class="logo-link">
-                <img src="./images/logo.png" alt="E-Adem" class="logo-img">
-            </a>
-            <div class="header-actions">
-                <a href="login.html" class="btn btn-outline header-login-btn">Login</a>
-                <button class="mobile-menu-btn"><i class="fas fa-bars"></i></button>
-                <button class="theme-toggle" aria-label="Toggle theme">
-                    <span class="theme-icon"><i class="fas fa-moon"></i></span>
-                </button>
+    <header class="fixed w-full top-0 z-50 bg-primary/95 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <a href="index.html" class="flex items-center gap-3">
+                    <img src="./images/logo.png" alt="E-Adem" class="h-12 w-auto brightness-0 invert">
+                </a>
+                <nav class="hidden lg:flex items-center gap-6">
+                    <a href="index.html" class="text-white/80 hover:text-white transition-colors">Home</a>
+                    <a href="about.html" class="text-white/80 hover:text-white transition-colors">About</a>
+                    <a href="services.html" class="text-white/80 hover:text-white transition-colors">Services</a>
+                    <a href="contact.html" class="text-white/80 hover:text-white transition-colors">Contact</a>
+                </nav>
+                <div class="flex items-center gap-4">
+                    <a href="register.html" class="px-5 py-2.5 bg-accent hover:bg-blue-600 text-white rounded-full text-sm font-semibold transition-all">Get Started</a>
+                </div>
             </div>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="about.html">About Us</a></li>
-                    <li><a href="services.html">Services</a></li>
-
-                    <li><a href="team.html">Team</a></li>
-                    <li><a href="ceo-mindset.html">CEO Mindset</a></li>
-                    <li><a href="market-insights.html">Market Insights</a></li>
-                    <li><a href="testimonials.html">Testimonials</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                </ul>
-            </nav>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero" style="height: 40vh; background: linear-gradient(rgba(26, 54, 93, 0.8), rgba(26, 54, 93, 0.9)), url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=80');">
-        <div class="container hero-content">
-            <h1>CEO Mindset</h1>
+    <!-- Hero -->
+    <section class="relative h-[40vh] flex items-center pt-20 bg-gradient-to-br from-primary via-secondary to-primary">
+        <div class="absolute inset-0 opacity-30">
+            <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl"></div>
+        </div>
+        <div class="relative max-w-7xl mx-auto px-4 text-center">
+            <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">CEO Mindset</h1>
+            <p class="text-white/80 text-lg">Leadership Philosophy</p>
         </div>
     </section>
 
-    <!-- CEO Mindset Content -->
-    <section class="section">
-        <div class="container">
-            <div class="card">
-                <div class="card-content">
-                    <h2>Leadership Philosophy</h2>
-                    <p>At the core of E-Adem Microfinance Company is a leadership philosophy centered on people, integrity, and sustainable impact. As CEO, I believe that true financial empowerment comes not just from providing capital, but from building relationships based on trust and mutual respect.</p>
-                    
-                    <h2>People-Centred Approach</h2>
-                    <p>Our clients are not just account numbers—they are entrepreneurs, farmers, artisans, and small business owners who form the backbone of our economy. We take the time to understand their unique challenges and aspirations, tailoring our services to meet their specific needs. This personalized approach has been key to our success and client retention.</p>
-                    
-                    <h2>Transparency and Integrity</h2>
-                    <p>In an industry sometimes plagued by opaque practices, we stand firm on transparency. Every term, every fee, every condition is clearly communicated. We believe that financial literacy is part of our service—empowering clients to make informed decisions about their money. Our integrity isn't just a value; it's our operational standard.</p>
-                    
-                    <h2>Vision for Community Empowerment</h2>
-                    <p>My vision extends beyond profit margins. I see E-Adem as a catalyst for community transformation. When we provide a loan to a market trader, we're not just funding inventory—we're supporting a family's education, healthcare, and future. When we teach forex trading skills, we're opening doors to new income streams. This holistic view of finance drives our expansion strategy and product development.</p>
-                    
-                    <h2>Commitment to Excellence</h2>
-                    <p>We continuously invest in our team's development, adopt best practices from global microfinance leaders, and leverage technology to improve efficiency—all while maintaining our human touch. Our goal is to set the benchmark for ethical, effective microfinance in Nigeria.</p>
-                    
-                    <p style="margin-top: 30px; font-style: italic;">"The measure of our success is not in our balance sheet, but in the prosperity of the communities we serve."</p>
-                    <p style="text-align: right; margin-top: 20px;"><strong>- Mrs Evelyn Oyediji, CEO</strong></p>
+    <!-- Content -->
+    <section class="py-16 bg-white">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+                <!-- Quote Banner -->
+                <div class="bg-gradient-to-r from-primary to-secondary p-8 text-center">
+                    <i class="fas fa-quote-left text-4xl text-white/30 mb-4"></i>
+                    <p class="text-white text-xl italic max-w-2xl mx-auto">"The measure of our success is not in our balance sheet, but in the prosperity of the communities we serve."</p>
+                    <p class="text-white/70 mt-4 font-semibold">- Mrs Evelyn Oyediji, CEO</p>
+                </div>
+
+                <div class="p-8 space-y-8">
+                    <!-- Leadership Philosophy -->
+                    <div>
+                        <h2 class="text-2xl font-bold text-primary mb-4 flex items-center gap-3">
+                            <span class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-lightbulb text-accent"></i>
+                            </span>
+                            Leadership Philosophy
+                        </h2>
+                        <p class="text-slate-600">At the core of E-Adem Microfinance Company is a leadership philosophy centered on people, integrity, and sustainable impact. As CEO, I believe that true financial empowerment comes not just from providing capital, but from building relationships based on trust and mutual respect.</p>
+                    </div>
+
+                    <!-- People-Centred -->
+                    <div>
+                        <h2 class="text-2xl font-bold text-primary mb-4 flex items-center gap-3">
+                            <span class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-users text-emerald-600"></i>
+                            </span>
+                            People-Centred Approach
+                        </h2>
+                        <p class="text-slate-600">Our clients are not just account numbers—they are entrepreneurs, farmers, artisans, and small business owners who form the backbone of our economy. We take the time to understand their unique challenges and aspirations, tailoring our services to meet their specific needs. This personalized approach has been key to our success and client retention.</p>
+                    </div>
+
+                    <!-- Transparency -->
+                    <div>
+                        <h2 class="text-2xl font-bold text-primary mb-4 flex items-center gap-3">
+                            <span class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-shield-alt text-amber-600"></i>
+                            </span>
+                            Transparency and Integrity
+                        </h2>
+                        <p class="text-slate-600">In an industry sometimes plagued by opaque practices, we stand firm on transparency. Every term, every fee, every condition is clearly communicated. We believe that financial literacy is part of our service—empowering clients to make informed decisions about their money. Our integrity isn't just a value; it's our operational standard.</p>
+                    </div>
+
+                    <!-- Vision -->
+                    <div>
+                        <h2 class="text-2xl font-bold text-primary mb-4 flex items-center gap-3">
+                            <span class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-eye text-purple-600"></i>
+                            </span>
+                            Vision for Community Empowerment
+                        </h2>
+                        <p class="text-slate-600">My vision extends beyond profit margins. I see E-Adem as a catalyst for community transformation. When we provide a loan to a market trader, we're not just funding inventory—we're supporting a family's education, healthcare, and future. When we teach forex trading skills, we're opening doors to new income streams. This holistic view of finance drives our expansion strategy and product development.</p>
+                    </div>
+
+                    <!-- Commitment -->
+                    <div>
+                        <h2 class="text-2xl font-bold text-primary mb-4 flex items-center gap-3">
+                            <span class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-award text-blue-600"></i>
+                            </span>
+                            Commitment to Excellence
+                        </h2>
+                        <p class="text-slate-600">We continuously invest in our team's development, adopt best practices from global microfinance leaders, and leverage technology to improve efficiency—all while maintaining our human touch. Our goal is to set the benchmark for ethical, effective microfinance in Nigeria.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>E-Adem Microfinance</h3>
-                    <p>Providing ethical financial services to empower communities since 2010.</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <ul class="footer-links">
-                        <li><a href="services.html">Our Services</a></li>
-                        <li><a href="register.html">Apply Now</a></li>
-                        <li><a href="contact.html">Contact Us</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Contact Info</h3>
-                    <p><i class="fas fa-map-marker-alt" style="margin-right: 10px;"></i> Barika Junction, opposite UI second gate, Ibadan, Nigeria</p>
-                    <p><i class="fas fa-envelope" style="margin-right: 10px;"></i> info@eademmicrofinance.com</p>
-                    <p><i class="fas fa-phone" style="margin-right: 10px;"></i> +234 706 398 1158</p>
-                </div>
-            </div>
-            <div class="copyright">
-                <p>&copy; 2026 E-Adem Microfinance Company. All rights reserved.</p>
+    <footer class="bg-slate-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="border-t border-slate-800 pt-8 text-center">
+                <p class="text-slate-500 text-sm">&copy; 2026 E-Adem Global Company Limited. All rights reserved.</p>
             </div>
         </div>
     </footer>
-
-    <script src="main.js"></script>
 </body>
 </html>

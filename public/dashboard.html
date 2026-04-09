@@ -13,11 +13,8 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -39,10 +36,15 @@
         }
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        * { font-family: 'Inter', sans-serif; }
+        body { background: #f1f5f9; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fadeIn 0.3s ease-out; }
+        .glass-input { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); }
+        .glass-input:focus { background: rgba(255,255,255,0.12); border-color: #3b82f6; }
     </style>
   </head>
-  <body class="dashboard-body">
+  <body class="min-h-screen flex">
     <!-- Sidebar - Updated with Tailwind -->
     <aside class="sidebar fixed left-0 top-0 h-full w-64 bg-primary text-white flex flex-col z-50 transition-transform duration-300 shadow-2xl" id="sidebar">
       <div class="p-6 border-b border-white/10">
@@ -114,7 +116,7 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="dashboard-main flex-1 ml-64 p-10 bg-slate-50 min-h-screen">
+    <main class="flex-1 ml-64 p-8 bg-slate-100 min-h-screen">
       <div class="flex justify-between items-center mb-10">
         <button
           class="lg:hidden mobile-menu-btn p-3 rounded-lg bg-white shadow-md text-primary"
@@ -132,7 +134,7 @@
       </div>
 
       <!-- View: Dashboard Overview -->
-      <div id="view-dashboard" class="dashboard-view active">
+      <div id="view-dashboard" class="dashboard-view active animate-fade">
         
         <!-- Verification Banner (Hidden by default) -->
         <div id="verification-banner" class="hidden bg-red-50 border border-red-200 p-4 rounded-lg mb-6 text-red-600 flex items-center justify-between">
@@ -270,8 +272,8 @@
         </div>
       </div>
 
-      <!-- View: My Profile - Updated with Tailwind -->
-      <div id="view-profile" class="dashboard-view">
+      <!-- View: My Profile -->
+      <div id="view-profile" class="dashboard-view hidden animate-fade">
         <div class="max-w-4xl mx-auto pb-10">
             <!-- Header Card -->
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden mb-6 border border-gray-100">
@@ -408,76 +410,76 @@
       </div>
 
       <!-- View: Apply for Service -->
-      <div id="view-apply" class="dashboard-view">
-        <div class="container" style="max-width: 900px">
-          <h2 style="margin-bottom: 20px">Make a New Request</h2>
-          <div class="application-form-container">
-               <!-- Form content remains same, handled by JS -->
-               <div style="text-align:center; padding: 40px;">
-                   <i class="fas fa-file-signature" style="font-size: 3rem; color: var(--accent-blue); margin-bottom: 20px;"></i>
-                   <h3>Submit a New Application</h3>
-                   <p style="color: var(--text-secondary); margin-bottom: 30px;">Choose from Loans, Investments, or Forex Classes.</p>
-                   <a href="application.html" class="btn btn-primary">Go to Application Page</a>
+      <div id="view-apply" class="dashboard-view hidden animate-fade">
+        <div class="max-w-2xl mx-auto">
+          <h2 class="text-2xl font-bold text-primary mb-6">Make a New Request</h2>
+          <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
+               <div class="w-20 h-20 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                   <i class="fas fa-file-signature text-3xl text-accent"></i>
                </div>
+               <h3 class="text-xl font-bold text-primary mb-3">Submit a New Application</h3>
+               <p class="text-gray-600 mb-6">Choose from Loans, Investments, or Forex Classes.</p>
+               <a href="application.html" class="inline-block px-8 py-4 bg-accent hover:bg-blue-600 text-white rounded-xl font-semibold transition-all shadow-lg shadow-blue-500/30">Go to Application Page</a>
           </div>
         </div>
       </div>
 
       <!-- View: My Loans -->
-      <div id="view-loans" class="dashboard-view">
-          <h2 style="margin-bottom: 24px;">My Loans</h2>
-          <div class="dashboard-grid">
-              <!-- Re-using the active loan card style -->
-              <div class="stat-card" id="loans-page-active-card">
-                <div style="display:flex; justify-content:space-between; align-items:start; width:100%">
+      <div id="view-loans" class="dashboard-view hidden animate-fade">
+          <h2 class="text-2xl font-bold text-primary mb-6">My Loans</h2>
+          
+          <div class="grid md:grid-cols-2 gap-6 mb-8">
+              <!-- Active Loan Card -->
+              <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg transition-all">
+                <div class="flex justify-between items-start mb-6">
                     <div>
-                       <div class="stat-icon"><i class="fas fa-file-invoice-dollar"></i></div>
-                       <div class="stat-info">
-                          <p>Active Loan Balance</p>
-                          <h3 id="loans-page-amount">₦0.00</h3>
-                       </div>
+                        <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-4">
+                            <i class="fas fa-file-invoice-dollar text-xl text-amber-600"></i>
+                        </div>
+                        <p class="text-gray-500 text-sm uppercase tracking-wide mb-1">Active Loan Balance</p>
+                        <h3 id="loans-page-amount" class="text-2xl font-bold text-gray-800">₦0.00</h3>
                     </div>
-                    <div id="loans-page-status" class="status-badge status-success">No Active Loans</div>
+                    <div id="loans-page-status" class="px-3 py-1 bg-emerald-100 text-emerald-600 rounded-full text-xs font-semibold">No Active Loans</div>
                 </div>
-                <div style="margin-top: 20px;">
-                    <p style="font-size: 0.9rem; margin-bottom: 5px;">Repayment Progress</p>
-                    <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
-                        <div id="loans-page-progress" style="width: 0%; height: 100%; background: var(--accent-blue);"></div>
+                <div class="mb-4">
+                    <p class="text-sm text-gray-500 mb-2">Repayment Progress</p>
+                    <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div id="loans-page-progress" class="h-full bg-accent rounded-full transition-all duration-500" style="width: 0%"></div>
                     </div>
-                    <p style="text-align: right; font-size: 0.8rem; margin-top: 5px; color: var(--text-secondary);">0% Repaid</p>
+                    <p id="loans-page-percent" class="text-right text-xs text-gray-400 mt-2">0% Repaid</p>
                 </div>
-                <div style="margin-top: 20px; display: flex; gap: 10px;">
-                    <button class="btn btn-sm btn-outline-primary" style="flex: 1;">Repayment History</button>
-                    <button class="btn btn-sm" style="flex: 1; background: var(--accent-blue); color: white; border: none;">Pay Now</button>
+                <div class="flex gap-3">
+                    <button class="flex-1 py-2.5 border border-accent text-accent rounded-xl font-medium hover:bg-accent hover:text-white transition-all text-sm">Repayment History</button>
+                    <button class="flex-1 py-2.5 bg-accent text-white rounded-xl font-medium hover:bg-blue-600 transition-all text-sm">Pay Now</button>
                 </div>
               </div>
 
               <!-- Apply New Loan Card -->
-              <div class="card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px;">
-                  <div style="width: 60px; height: 60px; background: var(--light-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-blue); font-size: 1.5rem; margin-bottom: 15px;">
-                      <i class="fas fa-plus"></i>
+              <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 flex flex-col items-center justify-center text-center text-white hover:shadow-2xl transition-all">
+                  <div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mb-4">
+                      <i class="fas fa-plus text-2xl"></i>
                   </div>
-                  <h3>Need Funds?</h3>
-                  <p style="color: var(--text-secondary); margin-bottom: 20px;">Apply for a new loan today with competitive interest rates.</p>
-                  <a href="application.html" class="btn btn-primary">Apply Now</a>
+                  <h3 class="text-xl font-bold mb-2">Need Funds?</h3>
+                  <p class="text-white/70 mb-4 text-sm">Apply for a new loan today with competitive interest rates.</p>
+                  <a href="application.html" class="px-6 py-3 bg-accent hover:bg-blue-600 text-white rounded-xl font-semibold transition-all">Apply Now</a>
               </div>
           </div>
           
-          <h3 style="margin-top: 40px; margin-bottom: 20px;">Loan History</h3>
-          <div class="card" style="padding: 0;">
-              <div class="table-responsive">
-                  <table class="transaction-table">
-                      <thead>
+          <h3 class="text-xl font-bold text-primary mb-4">Loan History</h3>
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+              <div class="overflow-x-auto">
+                  <table class="w-full">
+                      <thead class="bg-slate-50 text-gray-600 text-xs uppercase tracking-wider">
                           <tr>
-                              <th>Loan ID</th>
-                              <th>Date</th>
-                              <th>Amount</th>
-                              <th>Status</th>
+                              <th class="px-6 py-4 text-left">Loan ID</th>
+                              <th class="px-6 py-4 text-left">Date</th>
+                              <th class="px-6 py-4 text-left">Amount</th>
+                              <th class="px-6 py-4 text-left">Status</th>
                           </tr>
                       </thead>
                       <tbody>
                           <tr>
-                              <td colspan="4" style="text-align: center; padding: 20px; color: var(--text-secondary);">No loan history found.</td>
+                              <td colspan="4" class="px-6 py-12 text-center text-gray-400">No loan history found.</td>
                           </tr>
                       </tbody>
                   </table>
@@ -486,180 +488,259 @@
       </div>
 
       <!-- View: Investments -->
-      <div id="view-investments" class="dashboard-view">
-          <h2 style="margin-bottom: 24px;">My Investments</h2>
-          <div class="dashboard-grid">
-              <div class="stat-card">
-                 <div class="stat-icon"><i class="fas fa-chart-pie"></i></div>
-                 <div class="stat-info">
-                    <p>Total Portfolio Value</p>
-                    <h3>₦0.00</h3>
-                 </div>
-                 <div style="margin-top: 15px;">
-                     <span class="status-badge status-success">+ 0% Returns</span>
-                 </div>
+      <div id="view-investments" class="dashboard-view hidden animate-fade">
+          <h2 class="text-2xl font-bold text-primary mb-6">My Investments</h2>
+          
+          <div class="grid md:grid-cols-2 gap-6 mb-8">
+              <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg transition-all">
+                  <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mb-4">
+                      <i class="fas fa-chart-pie text-xl text-emerald-600"></i>
+                  </div>
+                  <p class="text-gray-500 text-sm uppercase tracking-wide mb-1">Total Portfolio Value</p>
+                  <h3 class="text-2xl font-bold text-gray-800 mb-4">₦0.00</h3>
+                  <span class="inline-flex items-center px-3 py-1 bg-emerald-100 text-emerald-600 rounded-full text-sm font-semibold">
+                      <i class="fas fa-arrow-up mr-1"></i> +0% Returns
+                  </span>
               </div>
 
-              <div class="card" style="background: linear-gradient(135deg, #10b981, #059669); color: white;">
-                  <h3>Start Investing</h3>
-                  <p style="opacity: 0.9; margin-bottom: 20px;">Grow your wealth with our secrued investment plans.</p>
-                  <a href="application.html" class="btn" style="background: white; color: #059669; border: none;">View Plans</a>
+              <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl p-6 text-white hover:shadow-2xl transition-all">
+                  <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-4">
+                      <i class="fas fa-rocket text-2xl"></i>
+                  </div>
+                  <h3 class="text-xl font-bold mb-2">Start Investing</h3>
+                  <p class="text-white/80 mb-4 text-sm">Grow your wealth with our secured investment plans.</p>
+                  <a href="application.html" class="inline-block px-6 py-3 bg-white text-emerald-600 rounded-xl font-semibold hover:bg-emerald-50 transition-all">View Plans</a>
               </div>
           </div>
 
-          <h3 style="margin-top: 40px; margin-bottom: 20px;">Active Plans</h3>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-              <div class="card">
-                  <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                      <h4 style="color: var(--primary-blue);">Gold Plan (6 Months)</h4>
-                      <span class="status-badge">Available</span>
+          <h3 class="text-xl font-bold text-primary mb-4">Available Plans</h3>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-emerald-200 transition-all group">
+                  <div class="flex justify-between items-start mb-4">
+                      <div class="flex items-center gap-2">
+                          <div class="w-8 h-8 bg-amber-400 rounded-lg flex items-center justify-center">
+                              <i class="fas fa-coins text-white text-sm"></i>
+                          </div>
+                          <h4 class="font-bold text-gray-800">Gold Plan</h4>
+                      </div>
+                      <span class="px-2 py-1 bg-emerald-100 text-emerald-600 rounded-full text-xs font-semibold">Available</span>
                   </div>
-                  <h2 style="margin-bottom: 10px;">10% <small style="font-size: 1rem; color: var(--text-secondary); font-weight: 400;">ROI</small></h2>
-                  <p style="color: var(--text-secondary); margin-bottom: 20px;">Secure short-term growth.</p>
-                  <a href="application.html" class="btn btn-outline-primary" style="width: 100%;">Invest Now</a>
+                  <p class="text-xs text-gray-500 mb-2">6 Months Duration</p>
+                  <h2 class="text-3xl font-bold text-gray-800 mb-2">10%<span class="text-base font-normal text-gray-500"> ROI</span></h2>
+                  <p class="text-gray-600 text-sm mb-4">Secure short-term growth with stable returns.</p>
+                  <a href="application.html" class="block w-full py-3 border-2 border-emerald-500 text-emerald-600 rounded-xl font-semibold text-center hover:bg-emerald-500 hover:text-white transition-all">Invest Now</a>
               </div>
-               <div class="card">
-                  <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                      <h4 style="color: var(--primary-blue);">Platinum Plan (1 Year)</h4>
-                      <span class="status-badge">Available</span>
+
+              <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-emerald-200 transition-all group relative overflow-hidden">
+                  <div class="absolute top-4 right-4 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full">Best Value</div>
+                  <div class="flex justify-between items-start mb-4">
+                      <div class="flex items-center gap-2">
+                          <div class="w-8 h-8 bg-gradient-to-br from-slate-600 to-slate-800 rounded-lg flex items-center justify-center">
+                              <i class="fas fa-gem text-white text-sm"></i>
+                          </div>
+                          <h4 class="font-bold text-gray-800">Platinum Plan</h4>
+                      </div>
+                      <span class="px-2 py-1 bg-emerald-100 text-emerald-600 rounded-full text-xs font-semibold">Available</span>
                   </div>
-                  <h2 style="margin-bottom: 10px;">25% <small style="font-size: 1rem; color: var(--text-secondary); font-weight: 400;">ROI</small></h2>
-                  <p style="color: var(--text-secondary); margin-bottom: 20px;">Maximize returns with long-term lock.</p>
-                  <a href="application.html" class="btn btn-outline-primary" style="width: 100%;">Invest Now</a>
+                  <p class="text-xs text-gray-500 mb-2">12 Months Duration</p>
+                  <h2 class="text-3xl font-bold text-gray-800 mb-2">25%<span class="text-base font-normal text-gray-500"> ROI</span></h2>
+                  <p class="text-gray-600 text-sm mb-4">Maximize returns with long-term lock-in.</p>
+                  <a href="application.html" class="block w-full py-3 bg-emerald-500 text-white rounded-xl font-semibold text-center hover:bg-emerald-600 transition-all">Invest Now</a>
+              </div>
+
+              <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg hover:border-emerald-200 transition-all group">
+                  <div class="flex justify-between items-start mb-4">
+                      <div class="flex items-center gap-2">
+                          <div class="w-8 h-8 bg-blue-400 rounded-lg flex items-center justify-center">
+                              <i class="fas fa-star text-white text-sm"></i>
+                          </div>
+                          <h4 class="font-bold text-gray-800">Premium Plan</h4>
+                      </div>
+                      <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded-full text-xs font-semibold">Coming Soon</span>
+                  </div>
+                  <p class="text-xs text-gray-500 mb-2">24 Months Duration</p>
+                  <h2 class="text-3xl font-bold text-gray-800 mb-2">40%<span class="text-base font-normal text-gray-500"> ROI</span></h2>
+                  <p class="text-gray-600 text-sm mb-4">Maximum growth for long-term investors.</p>
+                  <button disabled class="block w-full py-3 bg-gray-200 text-gray-400 rounded-xl font-semibold cursor-not-allowed">Coming Soon</button>
               </div>
           </div>
       </div>
 
       <!-- View: Forex -->
-      <div id="view-forex" class="dashboard-view">
-          <h2 style="margin-bottom: 24px;">Forex Trading Academy</h2>
-          <div class="dashboard-hero" style="background: linear-gradient(135deg, #4f46e5, #4338ca); padding: 30px;">
-              <div style="color: white; max-width: 600px;">
-                  <h1>Master the Markets</h1>
-                  <p style="margin-bottom: 20px; font-size: 1.1rem; opacity: 0.9;">Join our expert-led forex classes and learn profitable trading strategies.</p>
-                  <div style="display: flex; gap: 10px;">
-                      <a href="application.html" class="btn" style="background: white; color: #4338ca; border: none;">Enroll Now</a>
-                      <button class="btn" style="border: 1px solid rgba(255,255,255,0.3); color: white;">View Curriculum</button>
+      <div id="view-forex" class="dashboard-view hidden animate-fade">
+          <h2 class="text-2xl font-bold text-primary mb-6">Forex Trading Academy</h2>
+          
+          <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 text-white mb-8 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
+              <div class="relative max-w-xl">
+                  <h3 class="text-2xl font-bold mb-3">Master the Markets</h3>
+                  <p class="text-white/80 mb-6">Join our expert-led forex classes and learn profitable trading strategies from industry professionals.</p>
+                  <div class="flex flex-wrap gap-4">
+                      <a href="application.html" class="px-6 py-3 bg-white text-indigo-600 rounded-xl font-semibold hover:bg-indigo-50 transition-all">Enroll Now</a>
+                      <button class="px-6 py-3 border border-white/30 text-white rounded-xl font-semibold hover:bg-white/10 transition-all">View Curriculum</button>
                   </div>
               </div>
           </div>
 
-          <h3 style="margin-top: 30px; margin-bottom: 20px;">Market Signals (Live)</h3>
-           <div class="card">
-              <div class="table-responsive">
-                  <table class="transaction-table">
-                      <thead>
+          <h3 class="text-xl font-bold text-primary mb-4">Market Signals</h3>
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-4">
+              <div class="overflow-x-auto">
+                  <table class="w-full">
+                      <thead class="bg-slate-50 text-gray-600 text-xs uppercase tracking-wider">
                           <tr>
-                              <th>Pair</th>
-                              <th>Action</th>
-                              <th>Entry</th>
-                              <th>Take Profit</th>
-                              <th>Stop Loss</th>
-                              <th>Status</th>
+                              <th class="px-6 py-4 text-left">Pair</th>
+                              <th class="px-6 py-4 text-left">Action</th>
+                              <th class="px-6 py-4 text-left">Entry</th>
+                              <th class="px-6 py-4 text-left">Take Profit</th>
+                              <th class="px-6 py-4 text-left">Stop Loss</th>
+                              <th class="px-6 py-4 text-left">Status</th>
                           </tr>
                       </thead>
-                      <tbody>
-                          <tr>
-                              <td style="font-weight: 600;">EUR/USD</td>
-                              <td style="color: var(--success-green);">BUY</td>
-                              <td>1.0850</td>
-                              <td>1.0920</td>
-                              <td>1.0820</td>
-                              <td><span class="status-badge status-success">Active</span></td>
+                      <tbody class="divide-y divide-gray-100">
+                          <tr class="hover:bg-slate-50 transition-colors">
+                              <td class="px-6 py-4 font-semibold text-gray-800">EUR/USD</td>
+                              <td class="px-6 py-4"><span class="px-2 py-1 bg-emerald-100 text-emerald-600 rounded text-sm font-semibold">BUY</span></td>
+                              <td class="px-6 py-4">1.0850</td>
+                              <td class="px-6 py-4 text-emerald-600 font-medium">1.0920</td>
+                              <td class="px-6 py-4 text-red-500 font-medium">1.0820</td>
+                              <td class="px-6 py-4"><span class="px-2 py-1 bg-emerald-100 text-emerald-600 rounded-full text-xs font-semibold">Active</span></td>
                           </tr>
-                           <tr>
-                              <td style="font-weight: 600;">GBP/JPY</td>
-                              <td style="color: #ef4444;">SELL</td>
-                              <td>182.40</td>
-                              <td>181.00</td>
-                              <td>183.00</td>
-                              <td><span class="status-badge status-pending">Pending</span></td>
+                          <tr class="hover:bg-slate-50 transition-colors">
+                              <td class="px-6 py-4 font-semibold text-gray-800">GBP/JPY</td>
+                              <td class="px-6 py-4"><span class="px-2 py-1 bg-red-100 text-red-600 rounded text-sm font-semibold">SELL</span></td>
+                              <td class="px-6 py-4">182.40</td>
+                              <td class="px-6 py-4 text-emerald-600 font-medium">181.00</td>
+                              <td class="px-6 py-4 text-red-500 font-medium">183.00</td>
+                              <td class="px-6 py-4"><span class="px-2 py-1 bg-amber-100 text-amber-600 rounded-full text-xs font-semibold">Pending</span></td>
+                          </tr>
+                          <tr class="hover:bg-slate-50 transition-colors">
+                              <td class="px-6 py-4 font-semibold text-gray-800">USD/CHF</td>
+                              <td class="px-6 py-4"><span class="px-2 py-1 bg-emerald-100 text-emerald-600 rounded text-sm font-semibold">BUY</span></td>
+                              <td class="px-6 py-4">0.8845</td>
+                              <td class="px-6 py-4 text-emerald-600 font-medium">0.8900</td>
+                              <td class="px-6 py-4 text-red-500 font-medium">0.8800</td>
+                              <td class="px-6 py-4"><span class="px-2 py-1 bg-emerald-100 text-emerald-600 rounded-full text-xs font-semibold">Active</span></td>
                           </tr>
                       </tbody>
                   </table>
-                  <p style="text-align: center; padding: 10px; font-size: 0.8rem; color: var(--text-secondary);">Premium members see signals in real-time.</p>
+              </div>
+              <div class="px-6 py-3 bg-slate-50 border-t border-gray-100">
+                  <p class="text-xs text-gray-500 text-center">Premium members see signals in real-time. <a href="application.html" class="text-accent hover:underline">Upgrade now</a></p>
+              </div>
+          </div>
+
+          <!-- Forex Features -->
+          <div class="grid md:grid-cols-3 gap-6 mt-8">
+              <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center hover:shadow-lg transition-all">
+                  <div class="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <i class="fas fa-graduation-cap text-2xl text-indigo-600"></i>
+                  </div>
+                  <h4 class="font-bold text-gray-800 mb-2">Expert Training</h4>
+                  <p class="text-gray-600 text-sm">Learn from professional traders with years of market experience.</p>
+              </div>
+              <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center hover:shadow-lg transition-all">
+                  <div class="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <i class="fas fa-chart-bar text-2xl text-emerald-600"></i>
+                  </div>
+                  <h4 class="font-bold text-gray-800 mb-2">Live Analysis</h4>
+                  <p class="text-gray-600 text-sm">Get daily market analysis and trading opportunities.</p>
+              </div>
+              <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center hover:shadow-lg transition-all">
+                  <div class="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <i class="fas fa-users text-2xl text-purple-600"></i>
+                  </div>
+                  <h4 class="font-bold text-gray-800 mb-2">Trading Community</h4>
+                  <p class="text-gray-600 text-sm">Join our exclusive community of successful traders.</p>
               </div>
           </div>
       </div>
       
       <!-- View: Settings -->
-      <div id="view-settings" class="dashboard-view">
-          <h2 style="margin-bottom: 24px;">Account Settings</h2>
+      <div id="view-settings" class="dashboard-view hidden animate-fade">
+          <h2 class="text-2xl font-bold text-primary mb-6">Account Settings</h2>
           
-          <div class="row" style="display: flex; gap: 24px; flex-wrap: wrap;">
-             <!-- Security Section -->
-             <div class="card" style="flex: 1; min-width: 300px;">
-                 <h3 style="margin-bottom: 20px; color: var(--primary-blue);"><i class="fas fa-shield-alt"></i> Security</h3>
-                 <form id="settings-password-form">
-              <div class="form-group">
-                          <label>Current Password</label>
-                          <input type="password" id="current-password" class="form-control" placeholder="••••••••">
+          <div class="grid lg:grid-cols-2 gap-6 mb-6">
+              <!-- Security Section -->
+              <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                  <h3 class="text-lg font-bold text-primary mb-6 flex items-center gap-2">
+                      <i class="fas fa-shield-alt text-accent"></i> Security
+                  </h3>
+                  <form id="settings-password-form" class="space-y-4">
+                      <div>
+                          <label class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                          <input type="password" id="current-password" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent" placeholder="••••••••">
                       </div>
-                      <div class="form-group">
-                          <label>New Password</label>
-                          <input type="password" id="new-password" class="form-control" placeholder="••••••••">
+                      <div>
+                          <label class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                          <input type="password" id="new-password" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent" placeholder="••••••••">
                       </div>
-                     <button class="btn btn-primary" style="width: 100%;">Update Password</button>
-                 </form>
-                 
-                 <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border-color);">
-                 
-                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                     <div>
-                         <h4 style="margin-bottom: 5px;">2-Factor Authentication</h4>
-                         <p style="font-size: 0.85rem; color: var(--text-secondary);">Secure your account with OTP.</p>
-                     </div>
-                     <label class="switch">
-                        <input type="checkbox">
-                        <span class="slider round"></span>
-                     </label>
-                 </div>
-             </div>
+                      <button type="submit" class="w-full py-3 bg-accent hover:bg-blue-600 text-white rounded-xl font-semibold transition-all">Update Password</button>
+                  </form>
+                  
+                  <div class="mt-6 pt-6 border-t border-gray-100">
+                      <div class="flex items-center justify-between">
+                          <div>
+                              <h4 class="font-medium text-gray-800 mb-1">2-Factor Authentication</h4>
+                              <p class="text-sm text-gray-500">Secure your account with OTP</p>
+                          </div>
+                          <label class="relative inline-flex items-center cursor-pointer">
+                              <input type="checkbox" class="sr-only peer">
+                              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
+                          </label>
+                      </div>
+                  </div>
+              </div>
 
-             <!-- Preferences Section -->
-             <div class="card" style="flex: 1; min-width: 300px;">
-                 <h3 style="margin-bottom: 20px; color: var(--primary-blue);"><i class="fas fa-sliders-h"></i> Preferences</h3>
-                 
-                 <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                     <div>
-                         <h4 style="margin-bottom: 5px;">Email Notifications</h4>
-                         <p style="font-size: 0.85rem; color: var(--text-secondary);">Receive updates on your investments.</p>
-                     </div>
-                     <label class="switch">
-                        <input type="checkbox" checked>
-                        <span class="slider round"></span>
-                     </label>
-                 </div>
+              <!-- Preferences Section -->
+              <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                  <h3 class="text-lg font-bold text-primary mb-6 flex items-center gap-2">
+                      <i class="fas fa-sliders-h text-accent"></i> Preferences
+                  </h3>
+                  
+                  <div class="space-y-4">
+                      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                          <div>
+                              <h4 class="font-medium text-gray-800 mb-1">Email Notifications</h4>
+                              <p class="text-sm text-gray-500">Receive updates on your investments</p>
+                          </div>
+                          <label class="relative inline-flex items-center cursor-pointer">
+                              <input type="checkbox" checked class="sr-only peer">
+                              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
+                          </label>
+                      </div>
 
-                 <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                     <div>
-                         <h4 style="margin-bottom: 5px;">SMS Alerts</h4>
-                         <p style="font-size: 0.85rem; color: var(--text-secondary);">Get instant alerts on transactions.</p>
-                     </div>
-                     <label class="switch">
-                        <input type="checkbox" checked>
-                        <span class="slider round"></span>
-                     </label>
-                 </div>
-                 
-                 <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                     <div>
-                         <h4 style="margin-bottom: 5px;">Dark Mode</h4>
-                         <p style="font-size: 0.85rem; color: var(--text-secondary);">Switch between light and dark themes.</p>
-                     </div>
-                     <label class="switch">
-                        <input type="checkbox" id="settings-theme-toggle">
-                        <span class="slider round"></span>
-                     </label>
-                 </div>
-             </div>
+                      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                          <div>
+                              <h4 class="font-medium text-gray-800 mb-1">SMS Alerts</h4>
+                              <p class="text-sm text-gray-500">Get instant alerts on transactions</p>
+                          </div>
+                          <label class="relative inline-flex items-center cursor-pointer">
+                              <input type="checkbox" checked class="sr-only peer">
+                              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
+                          </label>
+                      </div>
+                      
+                      <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                          <div>
+                              <h4 class="font-medium text-gray-800 mb-1">Marketing Emails</h4>
+                              <p class="text-sm text-gray-500">Receive promotional offers</p>
+                          </div>
+                          <label class="relative inline-flex items-center cursor-pointer">
+                              <input type="checkbox" class="sr-only peer">
+                              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
+                          </label>
+                      </div>
+                  </div>
+              </div>
           </div>
           
           <!-- Danger Zone -->
-          <div class="card" style="margin-top: 24px; border: 1px solid #fee2e2;">
-              <h3 style="margin-bottom: 15px; color: #ef4444;"><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
-              <p style="margin-bottom: 20px; color: var(--text-secondary);">Once you delete your account, there is no going back. Please be certain.</p>
-              <button class="btn" style="background: #ef4444; color: white; border: none;">Delete Account</button>
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-red-200 mt-6">
+              <h3 class="text-lg font-bold text-red-600 mb-4 flex items-center gap-2">
+                  <i class="fas fa-exclamation-triangle"></i> Danger Zone
+              </h3>
+              <p class="text-gray-600 mb-4">Once you delete your account, there is no going back. All your data will be permanently removed.</p>
+              <button class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition-all">Delete Account</button>
           </div>
       </div>
 

@@ -191,12 +191,12 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
-// Verify Email
+// Verify Email - Redirect to verification page with token
 app.get('/api/verify-email', async (req, res) => {
     try {
         const { token } = req.query;
         if (!token) {
-            return res.status(400).send('Invalid verification link.');
+            return res.redirect('/email-verified.html?status=invalid&message=Invalid+verification+link');
         }
 
         const user = await User.findOne({
@@ -205,13 +205,7 @@ app.get('/api/verify-email', async (req, res) => {
         });
 
         if (!user) {
-            return res.status(400).send(`
-                <div style="text-align:center; padding: 50px; font-family: sans-serif;">
-                    <h2 style="color: #ef4444;">Verification Failed</h2>
-                    <p>The verification link is invalid or has expired.</p>
-                    <a href="/login.html" style="color: #3b82f6;">Return to Login</a>
-                </div>
-            `);
+            return res.redirect('/email-verified.html?status=expired&message=Verification+link+has+expired+or+is+invalid');
         }
 
         user.isEmailVerified = true;
@@ -220,16 +214,52 @@ app.get('/api/verify-email', async (req, res) => {
 
         await user.save();
 
-        res.send(`
-            <div style="text-align:center; padding: 50px; font-family: sans-serif;">
-                <h2 style="color: #10b981;">Email Verified Successfully!</h2>
-                <p>Thank you for verifying your email address.</p>
-                <a href="/dashboard.html" style="display:inline-block; margin-top:20px; padding: 10px 20px; background:#3b82f6; color:white; text-decoration:none; border-radius:5px;">Go to Dashboard</a>
-            </div>
-        `);
+        // Redirect to success page with success status
+        res.redirect('/email-verified.html?status=success&email=' + encodeURIComponent(user.email));
+
     } catch (error) {
         console.error('Email Verification Error:', error);
-        res.status(500).send('Server Error during verification.');
+        res.redirect('/email-verified.html?status=error&message=Server+error+during+verification');
+    }
+});
+
+// Resend verification email
+app.post('/api/resend-verification', async (req, res) => {
+    try {
+        const { email } = req.body;
+        
+        if (!email) {
+            return res.status(400).json({ message: 'Email is required' });
+        }
+
+        const user = await User.findOne({ email: email.toLowerCase() });
+        
+        if (!user) {
+            // Security: Don't reveal if user exists
+            return res.json({ message: 'If an account with this email exists, a verification email will be sent.' });
+        }
+
+        if (user.isEmailVerified) {
+            return res.json({ message: 'This email is already verified.' });
+        }
+
+        // Generate new verification token
+        const verificationToken = crypto.randomBytes(32).toString('hex');
+        user.emailVerificationToken = verificationToken;
+        user.emailVerificationExpires = Date.now() + 24 * 3600000; // 24 hours
+
+        await user.save();
+
+        // Send verification email
+        const host = req.headers.host;
+        sendVerificationEmail(user.email, user.fullName, verificationToken, host)
+            .catch(err => console.error('Resend Verification Email failed:', err));
+
+        res.json({ message: 'Verification email has been sent. Please check your inbox.' });
+
+    } catch (error) {
+        console.error('Resend Verification Error:', error);
+        res.status(500).json({ message: 'Server error processing request' });
     }
 });
 

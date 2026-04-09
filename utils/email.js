@@ -16,7 +16,7 @@ const transporter = nodemailer.createTransport({
 // Function to send a welcome email
 const sendWelcomeEmail = async (userEmail, userName) => {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.warn('Email credentials not found in environment variables. Email sending skipped.');
+      console.warn('Email credentials not found. Email sending skipped.');
       return;
   }
 
@@ -25,28 +25,80 @@ const sendWelcomeEmail = async (userEmail, userName) => {
     to: userEmail,
     subject: 'Welcome to E-Adem Global!',
     html: `
-      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
-        <div style="text-align: center; margin-bottom: 20px;">
-          <h1 style="color: #0044cc;">Welcome to E-Adem!</h1>
-        </div>
-        <p>Hello <strong>${userName}</strong>,</p>
-        <p>Thank you for joining E-Adem Global Company Limited. We are thrilled to have you on board!</p>
-        <p>Your account has been successfully created. You now have access to our dashboard where you can explore our services:</p>
-        <ul>
-          <li>Loans</li>
-          <li>Investments</li>
-          <li>Forex Trading Education</li>
-        </ul>
-        <p>If you have any questions, feel free to reply to this email or contact our support team.</p>
-        <br>
-        <p>Best Regards,</p>
-        <p><strong>The E-Adem Team</strong></p>
-        <div style="margin-top: 30px; font-size: 12px; color: #777; text-align: center;">
-          <p>&copy; ${new Date().getFullYear()} E-Adem Global Company Limited. All rights reserved.</p>
-        </div>
-      </div>
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
+          <div style="max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+              <!-- Header -->
+              <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 30px; text-align: center;">
+                  <h1 style="color: #ffffff; margin: 0; font-size: 24px;">E-Adem Global</h1>
+                  <p style="color: rgba(255,255,255,0.8); margin: 10px 0 0; font-size: 14px;">Microfinance Company Limited</p>
+              </div>
+              
+              <!-- Content -->
+              <div style="padding: 40px 30px;">
+                  <h2 style="color: #0f172a; margin: 0 0 20px; font-size: 22px;">Welcome Aboard, ${userName}!</h2>
+                  <p style="color: #64748b; line-height: 1.6; margin: 0 0 20px;">Thank you for joining E-Adem Global Company Limited. We're thrilled to have you on board!</p>
+                  <p style="color: #64748b; line-height: 1.6; margin: 0 0 20px;">Your account has been successfully created. You now have access to our dashboard where you can explore our services:</p>
+                  
+                  <!-- Services -->
+                  <div style="margin: 20px 0;">
+                      <div style="background: #f8fafc; border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center;">
+                          <div style="width: 40px; height: 40px; background: #dcfce7; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                              <span style="color: #16a34a; font-size: 20px;">💰</span>
+                          </div>
+                          <div>
+                              <strong style="color: #0f172a;">Loans</strong>
+                              <p style="color: #64748b; margin: 0; font-size: 13px;">Up to ₦500,000 with flexible repayment</p>
+                          </div>
+                      </div>
+                      <div style="background: #f8fafc; border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center;">
+                          <div style="width: 40px; height: 40px; background: #dbeafe; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                              <span style="color: #2563eb; font-size: 20px;">📈</span>
+                          </div>
+                          <div>
+                              <strong style="color: #0f172a;">Investments</strong>
+                              <p style="color: #64748b; margin: 0; font-size: 13px;">Up to 25% ROI with guaranteed returns</p>
+                          </div>
+                      </div>
+                      <div style="background: #f8fafc; border-radius: 8px; padding: 15px; display: flex; align-items: center;">
+                          <div style="width: 40px; height: 40px; background: #fae8ff; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                              <span style="color: #a855f7; font-size: 20px;">📚</span>
+                          </div>
+                          <div>
+                              <strong style="color: #0f172a;">Forex Education</strong>
+                              <p style="color: #64748b; margin: 0; font-size: 13px;">Expert-led trading classes</p>
+                          </div>
+                      </div>
+                  </div>
+                  
+                  <p style="color: #64748b; line-height: 1.6; margin: 20px 0 0; font-size: 14px;">If you have any questions, feel free to contact our support team. We're here to help!</p>
+              </div>
+              
+              <!-- Footer -->
+              <div style="background: #f8fafc; padding: 20px 30px; text-align: center; border-top: 1px solid #e2e8f0;">
+                  <p style="color: #94a3b8; margin: 0; font-size: 12px;">&copy; ${new Date().getFullYear()} E-Adem Global Company Limited. All rights reserved.</p>
+                  <p style="color: #94a3b8; margin: 10px 0 0; font-size: 12px;">Barika Junction, opposite UI second gate, Ibadan, Nigeria</p>
+              </div>
+          </div>
+      </body>
+      </html>
     `
   };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Welcome email sent: %s', info.messageId);
+    return info;
+  } catch (error) {
+    console.error('Error sending welcome email:', error);
+    return null;
+  }
+};
 
   try {
     const info = await transporter.sendMail(mailOptions);
@@ -66,30 +118,57 @@ const sendVerificationEmail = async (userEmail, userName, verificationToken, hos
         return;
     }
 
-    const verificationUrl = `http://${host}/api/verify-email?token=${verificationToken}`;
+    // Determine protocol based on environment
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const verificationUrl = `${protocol}://${host}/api/verify-email?token=${verificationToken}`;
 
     const mailOptions = {
         from: `"E-Adem Global" <${process.env.EMAIL_USER}>`,
         to: userEmail,
         subject: 'Please Verify Your Email - E-Adem Global',
         html: `
-            <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <h2 style="color: #0044cc;">Verify Your Email Address</h2>
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            </head>
+            <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
+                <div style="max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <!-- Header -->
+                    <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 30px; text-align: center;">
+                        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">E-Adem Global</h1>
+                        <p style="color: rgba(255,255,255,0.8); margin: 10px 0 0; font-size: 14px;">Microfinance Company Limited</p>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div style="padding: 40px 30px;">
+                        <h2 style="color: #0f172a; margin: 0 0 20px; font-size: 22px;">Verify Your Email Address</h2>
+                        <p style="color: #64748b; line-height: 1.6; margin: 0 0 20px;">Hello <strong style="color: #0f172a;">${userName}</strong>,</p>
+                        <p style="color: #64748b; line-height: 1.6; margin: 0 0 20px;">Thank you for registering with E-Adem Global Company Limited. To secure your account and access all features, please verify your email address by clicking the button below:</p>
+                        
+                        <!-- Button -->
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="${verificationUrl}" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600; font-size: 16px; box-shadow: 0 4px 15px rgba(59,130,246,0.4);">Verify Email Address</a>
+                        </div>
+                        
+                        <!-- Fallback Link -->
+                        <div style="background: #f8fafc; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                            <p style="color: #64748b; margin: 0 0 10px; font-size: 14px;">If the button doesn't work, copy and paste this link into your browser:</p>
+                            <p style="color: #3b82f6; margin: 0; font-size: 12px; word-break: break-all;">${verificationUrl}</p>
+                        </div>
+                        
+                        <p style="color: #64748b; line-height: 1.6; margin: 20px 0 0; font-size: 14px;">If you did not create an account with this email address, please ignore this email.</p>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div style="background: #f8fafc; padding: 20px 30px; text-align: center; border-top: 1px solid #e2e8f0;">
+                        <p style="color: #94a3b8; margin: 0; font-size: 12px;">&copy; ${new Date().getFullYear()} E-Adem Global Company Limited. All rights reserved.</p>
+                        <p style="color: #94a3b8; margin: 10px 0 0; font-size: 12px;">Barika Junction, opposite UI second gate, Ibadan, Nigeria</p>
+                    </div>
                 </div>
-                <p>Hello <strong>${userName}</strong>,</p>
-                <p>Thank you for registering with E-Adem Global Company Limited.</p>
-                <p>To secure your account and access all features, please verify your email address by clicking the button below:</p>
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="${verificationUrl}" style="background-color: #0044cc; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;">Verify Email Address</a>
-                </div>
-                <p>Or manually copy and paste this link into your browser:</p>
-                <p style="word-break: break-all; color: #555;">${verificationUrl}</p>
-                <p>If you did not create an account using this email address, please ignore this email.</p>
-                <br>
-                <p>Best Regards,</p>
-                <p><strong>The E-Adem Team</strong></p>
-            </div>
+            </body>
+            </html>
         `
     };
 
@@ -110,25 +189,60 @@ const sendPasswordResetEmail = async (userEmail, resetToken, host) => {
         return;
     }
 
-    const resetUrl = `http://${host}/reset-password.html?token=${resetToken}`;
+    // Determine protocol based on environment
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const resetUrl = `${protocol}://${host}/reset-password.html?token=${resetToken}`;
 
     const mailOptions = {
         from: `"E-Adem Global" <${process.env.EMAIL_USER}>`,
         to: userEmail,
-        subject: 'Password Reset Request',
+        subject: 'Password Reset Request - E-Adem Global',
         html: `
-            <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
-                <h2 style="color: #0044cc;">Password Reset Request</h2>
-                <p>You are receiving this because you (or someone else) have requested the reset of the password for your account.</p>
-                <p>Please click on the following link, or paste this into your browser to complete the process:</p>
-                <p><a href="${resetUrl}" style="background-color: #0044cc; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Reset Password</a></p>
-                <p>or copy and paste this link:</p>
-                <p>${resetUrl}</p>
-                <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
-                <br>
-                <p>Best Regards,</p>
-                <p><strong>The E-Adem Team</strong></p>
-            </div>
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            </head>
+            <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4;">
+                <div style="max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <!-- Header -->
+                    <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 30px; text-align: center;">
+                        <h1 style="color: #ffffff; margin: 0; font-size: 24px;">E-Adem Global</h1>
+                        <p style="color: rgba(255,255,255,0.8); margin: 10px 0 0; font-size: 14px;">Microfinance Company Limited</p>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div style="padding: 40px 30px;">
+                        <h2 style="color: #0f172a; margin: 0 0 20px; font-size: 22px;">Reset Your Password</h2>
+                        <p style="color: #64748b; line-height: 1.6; margin: 0 0 20px;">You are receiving this email because you (or someone else) has requested to reset the password for your account.</p>
+                        <p style="color: #64748b; line-height: 1.6; margin: 0 0 20px;">Click the button below to reset your password. This link will expire in <strong style="color: #0f172a;">1 hour</strong>.</p>
+                        
+                        <!-- Button -->
+                        <div style="text-align: center; margin: 30px 0;">
+                            <a href="${resetUrl}" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #ffffff; padding: 15px 30px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600; font-size: 16px; box-shadow: 0 4px 15px rgba(59,130,246,0.4);">Reset Password</a>
+                        </div>
+                        
+                        <!-- Fallback Link -->
+                        <div style="background: #f8fafc; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                            <p style="color: #64748b; margin: 0 0 10px; font-size: 14px;">If the button doesn't work, copy and paste this link into your browser:</p>
+                            <p style="color: #3b82f6; margin: 0; font-size: 12px; word-break: break-all;">${resetUrl}</p>
+                        </div>
+                        
+                        <!-- Security Notice -->
+                        <div style="background: #fef3c7; border-radius: 8px; padding: 15px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+                            <p style="color: #92400e; margin: 0; font-size: 14px;"><strong>Security Notice:</strong> If you did not request this password reset, please ignore this email. Your password will remain unchanged.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div style="background: #f8fafc; padding: 20px 30px; text-align: center; border-top: 1px solid #e2e8f0;">
+                        <p style="color: #94a3b8; margin: 0; font-size: 12px;">&copy; ${new Date().getFullYear()} E-Adem Global Company Limited. All rights reserved.</p>
+                        <p style="color: #94a3b8; margin: 10px 0 0; font-size: 12px;">Barika Junction, opposite UI second gate, Ibadan, Nigeria</p>
+                    </div>
+                </div>
+            </body>
+            </html>
         `
     };
 
