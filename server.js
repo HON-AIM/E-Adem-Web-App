@@ -647,12 +647,19 @@ app.get('/api/admin/stats', isAdmin, async (req, res) => {
         
         // Unverified Nin users count for quick action
         const pendingNinVerifications = await User.countDocuments({ nin: { $exists: true, $ne: null }, isNinVerified: false });
+        
+        // Total successful transactions amount
+        const txnAgg = await Transaction.aggregate([
+            { $match: { status: 'Success' } },
+            { $group: { _id: null, total: { $sum: '$amount' } } }
+        ]);
 
         res.json({
             totalUsers,
             totalActiveLoans,
             pendingApplications,
-            pendingNinVerifications
+            pendingNinVerifications,
+            totalTransactions: txnAgg[0]?.total || 0
         });
     } catch (error) {
         console.error('Error fetching admin stats:', error);
@@ -927,6 +934,183 @@ app.delete('/api/admin/application/:id', isAdmin, async (req, res) => {
     } catch (error) {
          res.status(500).json({ message: 'Error deleting application' });
     }
+});
+
+// Admin: Get Enhanced Stats
+app.get('/api/admin/dashboard-stats', isAdmin, async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments({ role: 'user' });
+        
+        // Total active loans
+        const usersWithLoans = await User.find({ activeLoanAmount: { $gt: 0 } });
+        const totalActiveLoans = usersWithLoans.reduce((sum, u) => sum + u.activeLoanAmount, 0);
+        const loansCount = usersWithLoans.length;
+        
+        // Applications stats
+        const pendingApplications = await Application.countDocuments({ status: 'Pending' });
+        const pendingNinVerifications = await User.countDocuments({ nin: { $exists: true, $ne: null }, isNinVerified: false });
+        
+        // Transaction stats
+        const totalTransactions = await Transaction.aggregate([
+            { $match: { status: 'Success' } },
+            { $group: { _id: null, total: { $sum: '$amount' } } }
+        ]);
+        
+        res.json({
+            totalUsers,
+            totalActiveLoans,
+            loansCount,
+            pendingApplications,
+            pendingNinVerifications,
+            totalTransactions: totalTransactions[0]?.total || 0
+        });
+    } catch (error) {
+        console.error('Dashboard stats error:', error);
+        res.status(500).json({ message: 'Error fetching dashboard stats' });
+    }
+});
+
+// Admin: Get All Transactions
+app.get('/api/admin/all-transactions', isAdmin, async (req, res) => {
+    try {
+        const transactions = await Transaction.find({})
+            .populate('userId', 'fullName email')
+            .sort({ createdAt: -1 })
+            .limit(500);
+        res.json(transactions);
+    } catch (error) {
+        console.error('Transactions error:', error);
+        res.status(500).json({ message: 'Error fetching transactions' });
+    }
+});
+
+// Admin: Wallet Adjustment (Credit/Debit)
+app.post('/api/admin/wallet-adjustment', isAdmin, async (req, res) => {
+    try {
+        const { userEmail, action, amount, note } = req.body;
+        
+        if (!userEmail || !action || !amount) {
+            return res.status(400).json({ message: 'Email, action, and amount are required' });
+        }
+        
+        const user = await User.findOne({ email: userEmail.toLowerCase() });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found with this email' });
+        }
+        
+        const numAmount = parseFloat(amount);
+        if (isNaN(numAmount) || numAmount <= 0) {
+            return res.status(400).json({ message: 'Invalid amount' });
+        }
+        
+        if (action === 'debit' && user.accountBalance < numAmount) {
+            return res.status(400).json({ message: 'Insufficient balance for debit' });
+        }
+        
+        // Update balance
+        const adjustment = action === 'credit' ? numAmount : -numAmount;
+        user.accountBalance = (user.accountBalance || 0) + adjustment;
+        await user.save();
+        
+        // Log the transaction
+        await Transaction.create({
+            userId: user._id,
+            type: action === 'credit' ? 'Admin_Credit' : 'Admin_Debit',
+            amount: numAmount,
+            reference: `ADM-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+            status: 'Success',
+            description: note || `Admin ${action}: ${action === 'credit' ? 'Added' : 'Removed'} ₦${numAmount.toLocaleString()}`
+        });
+        
+        res.json({ 
+            message: `Wallet ${action === 'credit' ? 'credited' : 'debited'} successfully. New balance: ₦${user.accountBalance.toLocaleString()}`,
+            newBalance: user.accountBalance
+        });
+    } catch (error) {
+        console.error('Wallet adjustment error:', error);
+        res.status(500).json({ message: 'Error adjusting wallet' });
+    }
+});
+
+// Admin: Update User Role
+app.post('/api/admin/update-role', isAdmin, async (req, res) => {
+    try {
+        const { userId, role } = req.body;
+        
+        if (userId === req.session.userId) {
+            return res.status(400).json({ message: 'Cannot modify your own role' });
+        }
+        
+        if (!['user', 'admin'].includes(role)) {
+            return res.status(400).json({ message: 'Invalid role' });
+        }
+        
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        
+        user.role = role;
+        await user.save();
+        
+        res.json({ message: `User role updated to ${role}` });
+    } catch (error) {
+        console.error('Update role error:', error);
+        res.status(500).json({ message: 'Error updating user role' });
+    }
+});
+
+// Admin: Create User Manually
+app.post('/api/admin/create-user', isAdmin, async (req, res) => {
+    try {
+        const { fullName, email, phone, password } = req.body;
+        
+        if (!fullName || !email || !password) {
+            return res.status(400).json({ message: 'Full name, email, and password are required' });
+        }
+        
+        const existing = await User.findOne({ email: email.toLowerCase() });
+        if (existing) {
+            return res.status(400).json({ message: 'User with this email already exists' });
+        }
+        
+        const user = new User({
+            fullName,
+            email: email.toLowerCase(),
+            phone,
+            password,
+            isEmailVerified: true, // Admin-created accounts are pre-verified
+            emailVerificationToken: undefined
+        });
+        
+        await user.save();
+        
+        res.status(201).json({ 
+            message: 'User created successfully',
+            user: { fullName: user.fullName, email: user.email }
+        });
+    } catch (error) {
+        console.error('Create user error:', error);
+        res.status(500).json({ message: 'Error creating user' });
+    }
+});
+
+// Admin: Get Audit Logs (placeholder for future implementation)
+app.get('/api/admin/audit-logs', isAdmin, async (req, res) => {
+    try {
+        // For now, return recent admin actions from applications
+        const logs = await Application.find({})
+            .sort({ createdAt: -1 })
+            .limit(100)
+            .select('type status createdAt approvedAt');
+        
+        res.json(logs.map(log => ({
+            action: `${log.type} ${log.status}`,
+            timestamp: log.status === 'Approved' ? log.approvedAt : log.createdAt,
+            type: 'application'
+        })));
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching audit logs' });
+    }
+});
 });
 
 // --- WALLET / PAYMENT ROUTES ---
