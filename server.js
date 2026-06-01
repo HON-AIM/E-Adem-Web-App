@@ -40,7 +40,7 @@ const upload = multer({
 const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/eadem_db';
-const SESSION_SECRET = process.env.SESSION_SECRET;
+const SESSION_SECRET = process.env.SESSION_SECRET || 'default_dev_secret_do_not_use_in_prod';
 const SETUP_SECRET = process.env.SETUP_SECRET;
 const PAYSTACK_WEBHOOK_SECRET = process.env.PAYSTACK_WEBHOOK_SECRET;
 
@@ -72,7 +72,8 @@ const { limiter, authLimiter } = require('./utils/security.js');
 
 // Middleware
 app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] ${req.method} ${req.url}`);
     logToFile(`${req.method} ${req.url}`);
     next();
 });
@@ -82,17 +83,11 @@ app.use(helmet({
     contentSecurityPolicy: false, // Disable CSP for now to avoid breaking inline scripts/styles during dev
 }));
 
-// Apply Rate Limiting
-app.use('/api/', limiter); // General API limit
-app.use('/api/login', authLimiter); // Strict login limit
-app.use('/api/register', authLimiter); // Strict register limit
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Session Setup
-// Configure Session with better reliability
+// Session Setup - must be before rate limiting to properly track requests
 app.use(session({
   secret: SESSION_SECRET,
   resave: false,               // Don't save session if unmodified
@@ -101,13 +96,16 @@ app.use(session({
   cookie: { 
     maxAge: 1000 * 60 * 60 * 24, // 1 day
     httpOnly: true,
-    // Secure cookies require HTTPS. If not on HTTPS (localhost), this must be false.
-    // We can use a check or default to false for dev/testing unless explicitly 'production'
+    // Secure cookies require HTTPS. If not on HTTPS, this must be false.
     secure: process.env.NODE_ENV === 'production', 
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' 
   }
- // removed proxy: true as it can cause issues if not behind a proxy
 }));
+
+// Apply Rate Limiting
+app.use('/api/', limiter);
+app.use('/api/login', authLimiter);
+app.use('/api/register', authLimiter);
 
 const crypto = require('crypto');
 const { sendWelcomeEmail, sendVerificationEmail, sendPasswordResetEmail } = require('./utils/email');
@@ -117,7 +115,6 @@ const { sendWelcomeEmail, sendVerificationEmail, sendPasswordResetEmail } = requ
 // Register
 app.post('/api/register', async (req, res) => {
   const timestamp = Date.now();
-  console.log('Register hit', timestamp);
   logToFile('Register hit ' + timestamp);
   
   try {
@@ -185,9 +182,24 @@ app.post('/api/register', async (req, res) => {
   } catch (error) {
     const msg = 'Server error during registration';
     console.error('CRITICAL REGISTER ERROR:', error);
+    console.error('Error name:', error.name);
+    console.error('Error code:', error.code);
+    console.error('Error message:', error.message);
     if (error.stack) console.error(error.stack);
     logToFile(msg + ' ' + error.stack);
-    res.status(500).json({ message: msg + ': ' + error.message });
+    
+    // Provide specific error messages based on error type
+    if (error.name === 'ValidationError' || error.message?.includes('validation')) {
+      return res.status(400).json({ message: 'Invalid data. Please check your inputs.' });
+    }
+    if (error.code === 11000 || error.message?.includes('duplicate')) {
+      return res.status(400).json({ message: 'An account with this email already exists.' });
+    }
+    if (error.name === 'MongoServerError') {
+      return res.status(400).json({ message: 'Database error. Please try again.' });
+    }
+    
+    res.status(500).json({ message: 'Registration failed. Please try again.' });
   }
 });
 
@@ -265,6 +277,7 @@ app.post('/api/resend-verification', async (req, res) => {
 
 // Login
 app.post('/api/login', async (req, res) => {
+  
   try {
     const { email, password } = req.body;
 
@@ -314,7 +327,7 @@ app.post('/api/login', async (req, res) => {
     });
   } catch (error) {
     console.error('Login Error:', error);
-    res.status(500).json({ message: 'Server error during login' });
+    res.status(500).json({ message: 'Server error occurred. Please try again later.' });
   }
 });
 
@@ -1374,10 +1387,10 @@ app.post('/api/webhook/paystack', express.raw({ type: 'application/json' }), asy
     }
 });
 
-// Global Error Handler for API routes
-app.use('/api/', (err, req, res, next) => {
-    console.error('API Error:', err);
-    logToFile('API Error: ' + err.message);
+// Global Error Handler
+app.use((err, req, res, next) => {
+    console.error('Global Error:', err.message);
+    logToFile('Error: ' + err.message + ' | URL: ' + req.url);
     res.status(500).json({ message: 'Server error occurred' });
 });
 
